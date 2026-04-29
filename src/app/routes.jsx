@@ -6,6 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import WorkspacePage from "../pages/WorkspacePage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import CreateProfile from "../pages/CreateProfile";
+import InvitePage from "../pages/InvitePage";
 import { Toaster } from "react-hot-toast";
 
 export default function AppRoutes() {
@@ -18,6 +19,7 @@ export default function AppRoutes() {
           <Route path="/register" element={<Register />} />
           <Route path="/confirm" element={<ConfirmOTP />} />
           <Route path="/create-profile" element={<CreateProfile />} />
+          <Route path="/invite/:token" element={<InvitePage />} />
 
           <Route
             path="/dashboard"
@@ -36,7 +38,7 @@ export default function AppRoutes() {
               </ProtectedRoute>
             }
           />
-          
+
         </Routes>
       </BrowserRouter>
     </>

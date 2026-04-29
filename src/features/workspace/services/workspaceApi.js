@@ -41,3 +41,23 @@ export const createWorkspace = async (payload) => {
 
   return res.data;
 };
+
+/* =========================
+   CREATE INVITE (ADD THIS)
+========================= */
+export const createInvite = async (payload) => {
+  const session = await fetchAuthSession();
+  const token = session.tokens?.idToken?.toString();
+
+  const res = await axios.post(
+    `${API_BASE}/workspace/createInvite`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};

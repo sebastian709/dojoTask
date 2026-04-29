@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { createInvite } from "../features/workspace/services/workspaceApi";
 
 const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
   const [copied, setCopied] = useState(false);
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -21,13 +23,29 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
     }
   };
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     if (!email) return toast.error("Enter email first");
 
-    // placeholder lang muna (no backend yet)
-    toast.success(`Invite sent to ${email}`);
+    try {
+      setLoading(true);
 
-    setEmail("");
+      const res = await createInvite({
+        workspace_id: workspace.workspace_id,
+        email,
+      });
+
+      const inviteLink = `${window.location.origin}/invite/${res.invite_token}`;
+
+      await navigator.clipboard.writeText(inviteLink);
+
+      toast.success("Invite created & link copied!");
+      setEmail("");
+    } catch (err) {
+      toast.error("Failed to create invite");
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -48,9 +66,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
       >
         {/* HEADER */}
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
-          <h2 className="text-white font-semibold">
-            Share Workspace
-          </h2>
+          <h2 className="text-white font-semibold">Share Workspace</h2>
 
           <button
             onClick={onClose}
@@ -60,9 +76,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
           </button>
         </div>
 
-        {/* CONTENT */}
         <div className="p-4 space-y-6">
-
           {/* WORKSPACE INFO */}
           <div>
             <h3 className="text-white font-semibold">
@@ -73,7 +87,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
             </p>
           </div>
 
-          {/* 🔥 INVITE SECTION (RESTORED) */}
+          {/* INVITE */}
           <div className="space-y-2">
             <label className="text-xs text-gray-400">
               Invite member (email)
@@ -89,18 +103,17 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
 
               <button
                 onClick={handleInvite}
-                className="px-3 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white text-xs cursor-pointer active:scale-95 transition"
+                disabled={loading}
+                className="px-3 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white text-xs disabled:opacity-50"
               >
-                Invite
+                {loading ? "..." : "Invite"}
               </button>
             </div>
           </div>
 
           {/* SHARE LINK */}
           <div className="space-y-2">
-            <label className="text-xs text-gray-400">
-              Share link
-            </label>
+            <label className="text-xs text-gray-400">Share link</label>
 
             <div className="flex gap-2">
               <input
@@ -111,40 +124,12 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
 
               <button
                 onClick={handleCopy}
-                className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs cursor-pointer active:scale-95 transition"
+                className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-xs"
               >
                 {copied ? "Copied ✓" : "Copy"}
               </button>
             </div>
           </div>
-
-          {/* MEMBERS */}
-          <div>
-            <h4 className="text-xs text-gray-400 mb-2">
-              Members
-            </h4>
-
-            {[1, 2, 3].map((m) => (
-              <div
-                key={m}
-                className="flex items-center justify-between py-2 border-b border-white/5"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center text-xs">
-                    U
-                  </div>
-                  <span className="text-sm text-white">
-                    User {m}
-                  </span>
-                </div>
-
-                <span className="text-[10px] text-gray-400">
-                  member
-                </span>
-              </div>
-            ))}
-          </div>
-
         </div>
       </div>
     </>

@@ -5,24 +5,26 @@ export const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
+      isAuthenticated: false,
 
       setUser: (user) =>
         set({
           user,
+          isAuthenticated: true,
         }),
 
       logout: () =>
         set({
           user: null,
+          isAuthenticated: false,
         }),
     }),
     {
       name: "auth-storage",
       version: 1,
-
-      // 🔥 only persist user (clean state)
       partialize: (state) => ({
         user: state.user,
+        isAuthenticated: state.isAuthenticated,
       }),
     }
   )
