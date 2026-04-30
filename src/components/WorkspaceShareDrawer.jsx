@@ -1,50 +1,24 @@
+// 📁 components/WorkspaceShareDrawer.jsx
+
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { createInvite } from "../features/workspace/services/workspaceApi";
 
 const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
   const [copied, setCopied] = useState(false);
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleCopy = async () => {
     try {
-      const link = `${window.location.origin}/workspace/${workspace?.workspace_id}`;
+      const link = `${window.location.origin}/workspace/join/${workspace.workspace_id}`;
 
       await navigator.clipboard.writeText(link);
 
       setCopied(true);
-      toast.success("Link copied!");
+      toast.success("Share link copied!");
 
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast.error("Copy failed");
       console.log(err);
-    }
-  };
-
-  const handleInvite = async () => {
-    if (!email) return toast.error("Enter email first");
-
-    try {
-      setLoading(true);
-
-      const res = await createInvite({
-        workspace_id: workspace.workspace_id,
-        email,
-      });
-
-      const inviteLink = `${window.location.origin}/invite/${res.invite_token}`;
-
-      await navigator.clipboard.writeText(inviteLink);
-
-      toast.success("Invite created & link copied!");
-      setEmail("");
-    } catch (err) {
-      toast.error("Failed to create invite");
-      console.log(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -87,37 +61,13 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
             </p>
           </div>
 
-          {/* INVITE */}
-          <div className="space-y-2">
-            <label className="text-xs text-gray-400">
-              Invite member (email)
-            </label>
-
-            <div className="flex gap-2">
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="user@email.com"
-                className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
-              />
-
-              <button
-                onClick={handleInvite}
-                disabled={loading}
-                className="px-3 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white text-xs disabled:opacity-50"
-              >
-                {loading ? "..." : "Invite"}
-              </button>
-            </div>
-          </div>
-
           {/* SHARE LINK */}
           <div className="space-y-2">
             <label className="text-xs text-gray-400">Share link</label>
 
             <div className="flex gap-2">
               <input
-                value={`${window.location.origin}/workspace/${workspace?.workspace_id}`}
+                value={`${window.location.origin}/workspace/join/${workspace.workspace_id}`}
                 readOnly
                 className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-xs"
               />

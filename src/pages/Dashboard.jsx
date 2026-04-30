@@ -71,7 +71,7 @@ export default function Dashboard() {
                 workspaceName={ws.workspace_name}
                 shortDesc={ws.description}
                 ownerName={ws.owner_fullname}
-                role={ws.role} // 🔥 important
+                role={ws.role}
               />
             ))}
           </div>

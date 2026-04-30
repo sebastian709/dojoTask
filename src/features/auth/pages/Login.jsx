@@ -19,8 +19,9 @@ export default function Login() {
   const redirectTo =
     searchParams.get("redirect") || "/dashboard";
 
-  // 🔥 CHECK IF INVITE FLOW
-  const isInviteFlow = redirectTo.startsWith("/invite/");
+  // 🔥 CORRECT FLAG
+  const isJoinFlow =
+    redirectTo.startsWith("/workspace/join/");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -55,12 +56,11 @@ export default function Login() {
         });
       } else {
         toast.success(
-          isInviteFlow
-            ? "Welcome! Continue to workspace 🚀"
+          isJoinFlow
+            ? "Continue to workspace 🚀"
             : "Welcome back!"
         );
 
-        // 🔥 IMPORTANT: keeps invite redirect intact
         navigate(redirectTo, { replace: true });
       }
     } catch (err) {
@@ -77,10 +77,10 @@ export default function Login() {
         onSubmit={handleLogin}
         className="w-[380px] bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-2xl shadow-2xl space-y-5 relative overflow-hidden"
       >
-        {/* 🔥 INVITE MODE BANNER */}
-        {isInviteFlow && (
+        {/* 🔥 JOIN MODE BANNER */}
+        {isJoinFlow && (
           <div className="mb-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs text-center">
-            You’ve been invited to join a workspace 👋
+            You’re joining a workspace 👋
             <div className="text-[10px] text-indigo-400 mt-1">
               Login to continue
             </div>
@@ -89,7 +89,7 @@ export default function Login() {
 
         {/* TITLE */}
         <h1 className="text-2xl font-bold text-white text-center">
-          {isInviteFlow ? "Join Workspace" : "Welcome Back"}
+          {isJoinFlow ? "Join Workspace" : "Welcome Back"}
         </h1>
 
         {/* EMAIL */}
@@ -111,20 +111,20 @@ export default function Login() {
         <button
           disabled={loading}
           className={`w-full py-3 rounded-lg text-white font-semibold transition ${
-            isInviteFlow
+            isJoinFlow
               ? "bg-indigo-500 hover:bg-indigo-600"
               : "bg-blue-500 hover:bg-blue-600"
           }`}
         >
           {loading
             ? "Signing in..."
-            : isInviteFlow
+            : isJoinFlow
             ? "Continue to Workspace"
             : "Login"}
         </button>
 
         {/* FOOTER */}
-        {!isInviteFlow && (
+        {!isJoinFlow && (
           <p className="text-center text-gray-300 text-sm">
             Don’t have an account?{" "}
             <span
