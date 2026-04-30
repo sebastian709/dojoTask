@@ -21,6 +21,7 @@ const normalizeUser = (data) => {
       data?.email ||
       data?.UserAttributes?.find((a) => a.Name === "email")?.Value ||
       "",
+    is_no_data : data?.is_no_data
   };
 };
 
