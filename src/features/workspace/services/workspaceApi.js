@@ -77,3 +77,20 @@ export const getWorkspace = async (workspaceId) => {
 
   return res.data;
 };
+
+export const getWorkspaceMembers = async (workspaceId) => {
+  const session = await fetchAuthSession();
+  const token = session.tokens?.idToken?.toString();
+
+  const res = await axios.post(
+    `${API_BASE}/workspace/getMember`,
+    { workspace_id: workspaceId },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data.members;
+};
