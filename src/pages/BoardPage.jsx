@@ -1,11 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import NavBar from "../components/NavBar";
-import { fetchAuthSession } from "aws-amplify/auth";
-import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { getBoard } from "../features/board/services/boardApi";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+import NavBar from "../components/NavBar";
+
 
 export default function BoardPage() {
   const { boardId, workspaceId } = useParams();
@@ -34,32 +33,11 @@ export default function BoardPage() {
   // ================= FETCH BOARD =================
   useEffect(() => {
     const fetchBoard = async () => {
-      try {
-        const session = await fetchAuthSession();
-        const token = session.tokens?.accessToken?.toString();
+      const data = await getBoard(boardId, workspaceId);
 
-        const res = await axios.post(
-          `${API_BASE}/board/crud`,
-          {
-            action: "GET",
-            board_id: boardId,
-            workspace_id: workspaceId,
-          },
-          {
-            headers: {
-              Authorization: token,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        setBoard(res.data);
-      } catch (err) {
-        console.log("BOARD FETCH ERROR:", err);
-      }
+      setBoard(data);
     };
-
-    fetchBoard();
+    fetchBoard(boardId, workspaceId);
   }, [boardId, workspaceId]);
 
   // ================= CLICK OUTSIDE MENU =================
