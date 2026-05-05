@@ -8,6 +8,8 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import CreateProfile from "../pages/CreateProfile";
 import { Toaster } from "react-hot-toast";
 import WorkspaceJoinPage from "../pages/WorkspaceJoinPage";
+import PublicRoute from "../components/PublicRoute";
+import BoardPage from "../pages/BoardPage";
 
 export default function AppRoutes() {
   return (
@@ -15,9 +17,30 @@ export default function AppRoutes() {
       <Toaster position="top-right" />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/confirm" element={<ConfirmOTP />} />
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/confirm"
+            element={
+              <PublicRoute>
+                <ConfirmOTP />
+              </PublicRoute>
+            }
+          />
           <Route path="/create-profile" element={<CreateProfile />} />
           <Route
             path="/workspace/join/:workspaceId"
@@ -38,6 +61,15 @@ export default function AppRoutes() {
             element={
               <ProtectedRoute>
                 <WorkspacePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/workspace/:workspaceId/board/:boardId"
+            element={
+              <ProtectedRoute>
+                <BoardPage />
               </ProtectedRoute>
             }
           />

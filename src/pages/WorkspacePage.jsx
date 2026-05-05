@@ -219,12 +219,19 @@ export default function WorkspacePage() {
               boards.map((board) => (
                 <div
                   key={board.board_id}
+                  onClick={() =>
+                    navigate(
+                      `/workspace/${workspaceId}/board/${board.board_id}`,
+                    )
+                  }
                   className="group relative p-3 rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] hover:from-white/10 hover:to-white/5 cursor-pointer transition-all duration-200 hover:scale-[1.03] hover:shadow-lg hover:shadow-indigo-500/10"
                 >
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-xl opacity-80 group-hover:opacity-100 transition"></div>
 
                   <div className="flex items-start justify-between">
-                    <h3 className="text-white font-semibold text-sm">{ board.board_name || 'Board' }</h3>
+                    <h3 className="text-white font-semibold text-sm">
+                      {board.board_name || "Board"}
+                    </h3>
 
                     <div className="text-gray-500 text-xs opacity-0 group-hover:opacity-100 transition">
                       ⋯
