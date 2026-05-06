@@ -163,11 +163,50 @@ export default function WorkspacePage() {
 
   if (!workspace) {
     return (
-      <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col">
+      <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col overflow-hidden">
         <NavBar />
-        <div className="flex flex-1 flex-col items-center justify-center text-gray-400 gap-3">
-          <span className="h-10 w-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></span>
-          <p className="text-sm animate-pulse">Loading your workspace...</p>
+
+        <div className="flex-1 flex items-center justify-center relative">
+          {/* background glow */}
+          <div className="absolute w-[500px] h-[500px] bg-indigo-500/10 blur-3xl rounded-full" />
+
+          <div className="relative flex flex-col items-center">
+            {/* spinner */}
+            <div className="relative flex items-center justify-center">
+              {/* outer ring */}
+              <div className="w-16 h-16 rounded-full border border-white/10" />
+
+              {/* spinning ring */}
+              <div className="absolute w-16 h-16 rounded-full border-2 border-transparent border-t-indigo-400 border-r-indigo-500 animate-spin" />
+
+              {/* center glow */}
+              <div className="absolute w-6 h-6 rounded-full bg-indigo-500/80 blur-sm animate-pulse" />
+            </div>
+
+            {/* text */}
+            <div className="mt-6 flex flex-col items-center">
+              <h2 className="text-sm font-medium text-white/90 tracking-wide">
+                Loading Workspace
+              </h2>
+
+              <p className="text-xs text-gray-500 mt-1 animate-pulse">
+                Syncing boards and tasks...
+              </p>
+            </div>
+
+            {/* loading bars */}
+            <div className="mt-8 flex gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" />
+              <span
+                className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+                style={{ animationDelay: "120ms" }}
+              />
+              <span
+                className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"
+                style={{ animationDelay: "240ms" }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );

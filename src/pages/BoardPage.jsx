@@ -36,16 +36,26 @@ export default function BoardPage() {
 
   const [loadingListId, setLoadingListId] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
   // ================= FETCH BOARD =================
   useEffect(() => {
     const fetchData = async () => {
-      const boardData = await getBoard(boardId, workspaceId);
+      try {
+        setLoading(true);
 
-      setBoard(boardData);
+        const boardData = await getBoard(boardId, workspaceId);
 
-      const fullBoard = await getBoardFull(boardId);
+        setBoard(boardData);
 
-      setLists(fullBoard || []);
+        const fullBoard = await getBoardFull(boardId);
+
+        setLists(fullBoard || []);
+      } catch (err) {
+        console.log("BOARD LOAD ERROR:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -261,6 +271,47 @@ export default function BoardPage() {
       setLoadingListId(null);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-[#0b0f19] text-white flex flex-col overflow-hidden">
+        <NavBar />
+        {/* HEADER */}
+        <div className="px-6 py-4 border-b border-white/10 bg-white/[0.02] animate-pulse">
+          <div className="h-6 w-52 rounded bg-white/10 mb-2" />
+
+          <div className="h-3 w-32 rounded bg-white/5" />
+        </div>
+
+        {/* BOARD */}
+        <div className="flex gap-4 p-6 overflow-hidden">
+          {[1, 2, 3].map((col) => (
+            <div
+              key={col}
+              className="w-72 flex-shrink-0 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl"
+            >
+              {/* LIST TITLE */}
+              <div className="h-4 w-28 rounded bg-white/10 animate-pulse mb-4" />
+
+              {/* TASKS */}
+              <div className="space-y-3">
+                {[1, 2, 3, 4].map((task) => (
+                  <div
+                    key={task}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] p-3"
+                  >
+                    <div className="h-3 w-full rounded bg-white/10 animate-pulse mb-2" />
+
+                    <div className="h-3 w-4/5 rounded bg-white/5 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-[#0b0f19] text-white flex flex-col">

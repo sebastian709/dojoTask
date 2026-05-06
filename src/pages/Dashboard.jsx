@@ -31,14 +31,47 @@ export default function Dashboard() {
         <h2 className="text-lg font-semibold mb-4">Workspaces</h2>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center text-gray-400 gap-3">
-            <div className="relative">
-              <span className="h-10 w-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin block"></span>
+          <div className="w-full">
+            {/* HEADER SKELETON */}
+            <div className="flex items-center justify-between mb-6 animate-pulse">
+              <div>
+                <div className="h-7 w-52 rounded-lg bg-white/10 mb-2" />
+
+                <div className="h-3 w-32 rounded bg-white/5" />
+              </div>
+
+              <div className="h-10 w-32 rounded-xl bg-white/10" />
             </div>
 
-            <p className="text-sm text-gray-300 animate-pulse">
-              Loading your workspace...
-            </p>
+            {/* WORKSPACE CARDS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <div
+                  key={item}
+                  className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-5"
+                >
+                  {/* shimmer */}
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
+
+                  {/* title */}
+                  <div className="h-5 w-40 rounded-lg bg-white/10 mb-4" />
+
+                  {/* desc */}
+                  <div className="space-y-2 mb-6">
+                    <div className="h-3 w-full rounded bg-white/5" />
+
+                    <div className="h-3 w-5/6 rounded bg-white/5" />
+                  </div>
+
+                  {/* footer */}
+                  <div className="flex items-center justify-between">
+                    <div className="h-3 w-20 rounded bg-white/10" />
+
+                    <div className="h-8 w-8 rounded-lg bg-white/10" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : workspaces.length === 0 ? (
           /* 🔥 EMPTY STATE */
