@@ -285,7 +285,7 @@ export default function WorkspacePage() {
 
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-[10px] px-2 py-[2px] rounded-full bg-white/10 text-gray-300">
-                      0 tasks
+                      {board.active_tasks || 0} tasks
                     </span>
 
                     <span className="text-[10px] text-indigo-400 opacity-0 group-hover:opacity-100 transition">
