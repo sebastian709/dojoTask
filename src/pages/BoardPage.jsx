@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
@@ -14,10 +14,20 @@ import {
 } from "../features/board/services/boardApi";
 import WorkspaceShareDrawer from "../components/WorkspaceShareDrawer";
 
+import {
+  Trash2,
+  ChevronRight,
+  LoaderCircle,
+  LayoutDashboard,
+  Share2,
+  ArrowLeft,
+} from "lucide-react";
+
 import NavBar from "../components/NavBar";
 
 export default function BoardPage() {
   const { boardId, workspaceId } = useParams();
+  const navigate = useNavigate();
 
   const [board, setBoard] = useState(null);
 
@@ -344,28 +354,80 @@ export default function BoardPage() {
       <NavBar />
 
       {/* HEADER */}
-      <div className="px-6 py-4 border-b border-white/10 backdrop-blur-xl bg-gradient-to-r from-white/[0.03] via-white/[0.02] to-white/[0.01] flex items-center justify-between shadow-sm shadow-black/20">
-        {/* LEFT */}
-        <div className="flex flex-col">
-          <h1 className="text-xl font-semibold tracking-tight text-white flex items-center gap-2">
-            {board?.board_name || "Loading..."}
+      <div className="sticky top-0 z-30 px-6 py-4 border-b border-white/10 bg-[#0a0f1c]/80 backdrop-blur-2xl">
+        {/* ambient glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.10),transparent_30%)] pointer-events-none" />
 
-            {/* subtle indicator */}
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-          </h1>
+        <div className="relative flex items-center justify-between">
+          {/* LEFT */}
+          <div className="flex items-center gap-5 min-w-0">
+            {/* BACK BUTTON */}
+            <button
+              onClick={() => navigate(`/workspace/${workspaceId}`)}
+              className="group relative overflow-hidden flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] px-3.5 py-2.5 transition-all duration-300 hover:border-indigo-400/20 hover:shadow-[0_0_30px_rgba(99,102,241,0.12)]"
+            >
+              {/* hover glow */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-[radial-gradient(circle_at_left,rgba(99,102,241,0.18),transparent_60%)]" />
 
-          <p className="text-xs text-gray-400 mt-1">
-            Manage tasks and workflow
-          </p>
-        </div>
+              {/* icon */}
+              <div className="relative w-8 h-8 rounded-xl border border-white/10 bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center">
+                <ArrowLeft
+                  size={15}
+                  strokeWidth={2.6}
+                  className="text-indigo-200 group-hover:-translate-x-0.5 transition-transform duration-200"
+                />
+              </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-2">
+              {/* text */}
+              <div className="relative flex flex-col items-start leading-none">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
+                  Return
+                </span>
+
+                <span className="text-sm font-medium text-white">
+                  Workspace
+                </span>
+              </div>
+            </button>
+
+            {/* BOARD INFO */}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-semibold tracking-tight text-white truncate">
+                  {board?.board_name || "Loading..."}
+                </h1>
+
+                {/* live dot */}
+                <div className="relative flex items-center justify-center">
+                  <span className="absolute w-3 h-3 rounded-full bg-emerald-400/30 animate-ping" />
+
+                  <span className="relative w-2 h-2 rounded-full bg-emerald-400" />
+                </div>
+              </div>
+
+              <p className="text-[11px] text-gray-500 mt-1 tracking-wide">
+                Manage tasks and workflow
+              </p>
+            </div>
+          </div>
+
+          {/* RIGHT */}
           <button
             onClick={() => setShareOpen(true)}
-            className="px-3 py-1.5 text-xs rounded-lg bg-white/[0.05] border border-white/10 text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all duration-200 hover:shadow-md hover:shadow-indigo-500/10"
+            className="group relative overflow-hidden flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] px-4 py-2.5 transition-all duration-300 hover:border-indigo-400/20 hover:shadow-[0_0_30px_rgba(99,102,241,0.12)]"
           >
-            Share
+            {/* hover glow */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.18),transparent_60%)]" />
+
+            <Share2
+              size={15}
+              strokeWidth={2.5}
+              className="relative text-gray-300 group-hover:text-white transition"
+            />
+
+            <span className="relative text-xs font-medium text-gray-300 group-hover:text-white transition">
+              Share
+            </span>
           </button>
         </div>
       </div>
@@ -434,27 +496,69 @@ export default function BoardPage() {
                       {isMenuOpen && (
                         <div
                           ref={menuRef}
-                          className="absolute right-2 top-10 z-50 w-44 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-2xl shadow-black/40 p-2 animate-fadeIn"
+                          className="absolute right-2 top-10 z-50 w-52 overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a]/95 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.45)] animate-fadeIn"
                         >
-                          <p className="p-2">List Menu</p>
+                          {/* glow */}
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.06),transparent_60%)] pointer-events-none" />
 
-                          {/* DIVIDER */}
-                          <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-2" />
+                          {/* HEADER */}
+                          <div className="relative px-3 pt-3 pb-2">
+                            <p className="text-xs font-semibold text-white tracking-wide">
+                              List Menu
+                            </p>
 
-                          {/* DELETE */}
-                          <button
-                            onClick={() => handleDeleteList(list.list_id)}
-                            disabled={loadingListId === list.list_id}
-                            className="group flex items-center gap-2 w-full px-3 py-2 rounded-xl text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 disabled:opacity-50"
-                          >
-                            <span className="text-sm opacity-70 group-hover:opacity-100">
-                              {loadingListId === list.list_id ? "⏳" : "🗑"}
-                            </span>
+                            <p className="text-[10px] text-gray-500 mt-0.5">
+                              Manage this list
+                            </p>
+                          </div>
 
-                            {loadingListId === list.list_id
-                              ? "Deleting..."
-                              : "Delete"}
-                          </button>
+                          {/* divider */}
+                          <div className="h-px bg-white/5" />
+
+                          {/* ACTIONS */}
+                          <div className="relative p-2">
+                            <button
+                              onClick={() => handleDeleteList(list.list_id)}
+                              disabled={loadingListId === list.list_id}
+                              className="group relative flex items-center justify-between w-full rounded-xl px-2.5 py-2.5 hover:bg-red-500/[0.06] transition-all duration-200 disabled:opacity-50"
+                            >
+                              {/* LEFT */}
+                              <div className="flex items-center gap-2.5">
+                                {/* ICON */}
+                                <div className="w-8 h-8 rounded-xl bg-red-500/10 border border-red-400/10 flex items-center justify-center text-red-300">
+                                  {loadingListId === list.list_id ? (
+                                    <LoaderCircle
+                                      size={15}
+                                      className="animate-spin"
+                                      strokeWidth={2.3}
+                                    />
+                                  ) : (
+                                    <Trash2 size={15} strokeWidth={2.3} />
+                                  )}
+                                </div>
+
+                                {/* TEXT */}
+                                <div className="text-left">
+                                  <p className="text-xs font-medium text-white group-hover:text-red-100 transition">
+                                    {loadingListId === list.list_id
+                                      ? "Deleting..."
+                                      : "Delete List"}
+                                  </p>
+
+                                  <p className="text-[10px] text-gray-500 mt-0.5">
+                                    Remove permanently
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* RIGHT */}
+                              <ChevronRight
+                                size={14}
+                                strokeWidth={2.5}
+                                className="text-red-300/50 group-hover:text-red-200 transition-all duration-200 group-hover:translate-x-0.5"
+                              />
+                            </button>
+                          </div>
                         </div>
                       )}
 

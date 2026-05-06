@@ -217,11 +217,13 @@ export default function WorkspacePage() {
       <NavBar />
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-64 border-r border-white/10">
+        {/* SIDEBAR */}
+        <div className="flex-shrink-0">
           <SideBar />
         </div>
 
-        <main className="flex-1 p-6 overflow-y-auto">
+        {/* CONTENT */}
+        <main className="flex-1 min-w-0 p-6 overflow-y-auto">
           {/* HEADER */}
           <div className="flex items-center justify-between">
             <div>
