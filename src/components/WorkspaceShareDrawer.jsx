@@ -29,7 +29,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
     // loadUser();
   }, []);
 
-  console.log(userId)
+  console.log(userId);
 
   const loadMembers = async () => {
     if (!open || !workspace?.workspace_id) return;
@@ -152,48 +152,108 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
           </div>
 
           {/* MEMBERS SECTION */}
-          <div>
-            <p className="text-xs text-gray-400 mb-2">
-              Members ({members?.length || 0})
-            </p>
+          <div className="space-y-3">
+            {/* HEADER */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-white">
+                  Workspace Members
+                </p>
 
-            <div className="flex flex-wrap gap-2">
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  {members?.length || 0} people in this workspace
+                </p>
+              </div>
+
+              <div className="px-2 py-1 rounded-lg bg-indigo-500/10 border border-indigo-400/10 text-[10px] text-indigo-300">
+                Active
+              </div>
+            </div>
+
+            {/* MEMBERS LIST */}
+            <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
               {loading ? (
-                Array.from({ length: 6 }).map((_, i) => (
+                Array.from({ length: 5 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-lg border border-white/10 animate-pulse"
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3 animate-pulse"
                   >
-                    {/* avatar skeleton */}
-                    <div className="w-6 h-6 rounded-full bg-white/10" />
+                    <div className="flex items-center gap-3">
+                      {/* avatar */}
+                      <div className="w-10 h-10 rounded-xl bg-white/10" />
 
-                    {/* text skeleton */}
-                    <div className="w-20 h-3 bg-white/10 rounded" />
+                      {/* info */}
+                      <div className="space-y-2">
+                        <div className="w-28 h-3 rounded bg-white/10" />
+
+                        <div className="w-16 h-2 rounded bg-white/5" />
+                      </div>
+                    </div>
+
+                    <div className="w-14 h-5 rounded-full bg-white/10" />
                   </div>
                 ))
               ) : members?.length > 0 ? (
                 members.map((m, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-lg border border-white/10"
+                    className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] transition-all duration-200 px-3 py-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] text-white">
-                      {avatarText(m.firstname + " " + m.lastname || m.user_id)}
+                    {/* LEFT */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      {/* avatar */}
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 flex-shrink-0">
+                        {avatarText(
+                          m.firstname + " " + m.lastname || m.user_id,
+                        )}
+                      </div>
+
+                      {/* info */}
+                      <div className="min-w-0">
+                        <p className="text-sm text-white truncate">
+                          {m.user_id === userId
+                            ? "You"
+                            : `${m.firstname} ${m.lastname}`}
+                        </p>
+
+                        <p className="text-[11px] text-gray-500 truncate">
+                          {m.email || m.user_id}
+                        </p>
+                      </div>
                     </div>
 
-                    <span className="text-[11px] text-gray-300">
-                      {m.user_id == userId ? "You" : m.firstname + " " + m.lastname || m.user_id}
-                    </span>
+                    {/* RIGHT */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {m.role && (
+                        <div
+                          className={`px-2 py-1 rounded-full text-[10px] border ${
+                            m.role === "owner"
+                              ? "bg-amber-500/10 text-amber-300 border-amber-400/10"
+                              : m.role === "admin"
+                                ? "bg-indigo-500/10 text-indigo-300 border-indigo-400/10"
+                                : "bg-white/[0.04] text-gray-400 border-white/10"
+                          }`}
+                        >
+                          {m.role}
+                        </div>
+                      )}
 
-                    {m.role && (
-                      <span className="text-[9px] text-indigo-400">
-                        {m.role}
-                      </span>
-                    )}
+                      <div className="w-2 h-2 rounded-full bg-green-400 opacity-70 group-hover:opacity-100 transition" />
+                    </div>
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-gray-500">No members yet</p>
+                <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] py-10 px-4 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-white/[0.04] flex items-center justify-center mx-auto mb-3 text-2xl">
+                    👥
+                  </div>
+
+                  <p className="text-sm text-gray-300">No members yet</p>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    Invite people using the share link
+                  </p>
+                </div>
               )}
             </div>
           </div>

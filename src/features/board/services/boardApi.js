@@ -251,3 +251,77 @@ export const deleteList = async (
     throw err;
   }
 };
+
+export const reorderTask = async (
+  taskId,
+  orderIndex
+) => {
+  try {
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res = await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action: "REORDER_TASK",
+
+        task_id: taskId,
+
+        order_index: orderIndex,
+      },
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type":
+            "application/json",
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err) {
+    console.log(
+      "REORDER TASK ERROR:",
+      err
+    );
+  }
+};
+
+export const reorderListTasks =
+  async (tasks) => {
+    try {
+      const session =
+        await fetchAuthSession();
+
+      const token =
+        session.tokens?.accessToken?.toString();
+
+      const res = await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "REORDER_LIST_TASKS",
+
+          tasks,
+        },
+        {
+          headers: {
+            Authorization: token,
+
+            "Content-Type":
+              "application/json",
+          },
+        }
+      );
+
+      return res.data;
+    } catch (err) {
+      console.log(
+        "REORDER TASKS ERROR:",
+        err
+      );
+    }
+  };

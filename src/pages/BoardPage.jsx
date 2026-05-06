@@ -9,7 +9,10 @@ import {
   moveTask,
   updateList,
   deleteList,
+  reorderTask,
+  reorderListTasks,
 } from "../features/board/services/boardApi";
+import WorkspaceShareDrawer from "../components/WorkspaceShareDrawer";
 
 import NavBar from "../components/NavBar";
 
@@ -37,6 +40,8 @@ export default function BoardPage() {
   const [loadingListId, setLoadingListId] = useState(null);
 
   const [loading, setLoading] = useState(true);
+
+  const [shareOpen, setShareOpen] = useState(false);
 
   // ================= FETCH BOARD =================
   useEffect(() => {
@@ -207,6 +212,13 @@ export default function BoardPage() {
         ),
       );
 
+      try {
+        await Promise.all(
+          newTasks.map((task, index) => reorderTask(task.task_id, index)),
+        );
+      } catch (err) {
+        console.log("REORDER SAVE ERROR:", err);
+      }
       return;
     }
 
@@ -241,9 +253,23 @@ export default function BoardPage() {
       }),
     );
 
+    const reorderedTasks = [
+      ...sourceTasks.map((task, index) => ({
+        task_id: task.task_id,
+        list_id: sourceList.list_id,
+        order_index: index,
+      })),
+
+      ...destTasks.map((task, index) => ({
+        task_id: task.task_id,
+        list_id: destList.list_id,
+        order_index: index,
+      })),
+    ];
+
     // save to DB
     try {
-      await moveTask(dragged.task_id, destList.list_id);
+      await await reorderListTasks(reorderedTasks);
     } catch (err) {
       console.log("MOVE TASK ERROR:", err);
     }
@@ -335,7 +361,10 @@ export default function BoardPage() {
 
         {/* RIGHT */}
         <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 text-xs rounded-lg bg-white/[0.05] border border-white/10 text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all duration-200 hover:shadow-md hover:shadow-indigo-500/10">
+          <button
+            onClick={() => setShareOpen(true)}
+            className="px-3 py-1.5 text-xs rounded-lg bg-white/[0.05] border border-white/10 text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all duration-200 hover:shadow-md hover:shadow-indigo-500/10"
+          >
             Share
           </button>
         </div>
@@ -508,6 +537,14 @@ export default function BoardPage() {
           </div>
         </div>
       </DragDropContext>
+
+      <WorkspaceShareDrawer
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        workspace={{
+          workspace_id: workspaceId,
+        }}
+      />
     </div>
   );
 }
