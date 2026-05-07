@@ -3,7 +3,7 @@ import {
   confirmSignUp,
   signIn,
   resendSignUpCode,
-  signOut 
+  signOut
 } from "aws-amplify/auth";
 
 export const registerUser = async (email, password) => {
@@ -23,12 +23,17 @@ export const confirmUser = async (email, code) => {
   });
 };
 
-export const loginUser = async (email, password) => {
-  return await signIn({
-    username: email,
-    password,
-  });
-};
+export const loginUser =
+  async (
+    email,
+    password
+  ) => {
+
+    return await signIn({
+      username: email,
+      password,
+    });
+  };
 
 export const resendOTP = async (email) => {
   return await resendSignUpCode({
@@ -36,6 +41,16 @@ export const resendOTP = async (email) => {
   });
 };
 
-export const logoutUser = async () => {
-  return await signOut();
-};
+export const logoutUser =
+  async () => {
+
+    //
+    // 🔥 CLOSE WS
+    //
+    window.dojoWS?.close();
+
+    //
+    // 🔥 SIGN OUT
+    //
+    return await signOut();
+  };

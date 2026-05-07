@@ -5,6 +5,8 @@ import { fetchAuthSession } from "aws-amplify/auth";
 import { useWorkspaceStore } from "../features/workspace/store/workspaceStore";
 import { getWorkspaceMembers } from "../features/workspace/services/workspaceApi";
 
+import { formatLastSeen } from "../utils/timeAgo";
+
 import {
   Rocket,
   Copy,
@@ -29,6 +31,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
     const loadUser = async () => {
       try {
         const session = await fetchAuthSession();
+
         const id = session?.tokens?.idToken?.payload?.sub;
 
         setUserId(id);
@@ -37,44 +40,33 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
       }
     };
 
-    // loadUser();
+    loadUser();
   }, []);
 
-  console.log(userId);
-
-  const loadMembers = async () => {
-    if (!open || !workspace?.workspace_id) return;
-
-    setLoading(true);
-
-    try {
-      const data = await getWorkspaceMembers(workspace.workspace_id);
-      setMembers(data);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load members");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // console.log(userId);
 
   useEffect(() => {
+    if (!open || !workspace?.workspace_id) {
+      return;
+    }
+
     const loadMembers = async () => {
-      if (!open || !workspace?.workspace_id) return;
-
-      setLoading(true);
-
       try {
+        setLoading(true);
+
         const data = await getWorkspaceMembers(workspace.workspace_id);
+
         setMembers(data);
       } catch (err) {
         console.error(err);
-        toast.error("Failed to load members");
       } finally {
         setLoading(false);
       }
     };
 
+    //
+    // 🔥 INITIAL LOAD
+    //
     loadMembers();
   }, [open, workspace?.workspace_id]);
 
@@ -262,9 +254,22 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
                               : `${m.firstname} ${m.lastname}`}
                           </p>
 
-                          <p className="text-[11px] text-gray-500 truncate">
-                            {m.email || m.user_id}
-                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {/* online dot */}
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                m.status === "online"
+                                  ? "bg-emerald-400"
+                                  : "bg-gray-500"
+                              }`}
+                            />
+
+                            <p className="text-[11px] text-gray-500 truncate">
+                              {m.status === "online"
+                                ? "Online"
+                                : formatLastSeen(m.last_seen)}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
