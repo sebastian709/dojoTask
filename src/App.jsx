@@ -8,93 +8,97 @@ import "./services/awsConfig";
 
 import AppRoutes from "./app/routes";
 
+import { Hub } from "aws-amplify/utils";
+
 function App() {
   useEffect(() => {
     let ws;
 
     const connectWS = async () => {
       try {
-        //
-        // 🔥 GET SESSION
-        //
         const session = await fetchAuthSession();
 
-        //
-        // 🔥 USER ID
-        //
         const userId = session?.tokens?.idToken?.payload?.sub;
 
-        //
-        // ❌ NOT LOGGED IN
-        //
         if (!userId) {
           return;
         }
 
         //
-        // 🔥 CONNECT WS
+        // 🔥 CLOSE OLD WS
+        //
+        if (ws) {
+          ws.close();
+        }
+
+        //
+        // 🔥 CONNECT
         //
         ws = new WebSocket(`${import.meta.env.VITE_WS_URL}?user_id=${userId}`);
 
-        //
-        // 🔥 GLOBAL
-        //
         window.dojoWS = ws;
-
-        //
-        // 🔥 MESSAGE
-        //
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-
-            //
-            // PRESENCE
-            //
-            if (data.type === "PRESENCE_UPDATE") {
-              const store = useWorkspaceStore.getState();
-
-              if (store.members.length > 0) {
-                const updated = store.members.map((m) =>
-                  m.user_id === data.user_id
-                    ? {
-                        ...m,
-
-                        status: data.status,
-
-                        last_seen: data.last_seen,
-                      }
-                    : m,
-                );
-
-                store.setMembers(updated);
-              }
-            }
-          } catch (err) {
-            console.log("WS MESSAGE ERROR", err);
-          }
-        };
 
         ws.onopen = () => {
           console.log("WS CONNECTED");
         };
 
-        ws.onclose = () => {
-          console.log("WS CLOSED");
-        };
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
 
-        ws.onerror = (err) => {
-          console.log("WS ERROR", err);
+          if (data.type === "PRESENCE_UPDATE") {
+            useWorkspaceStore.setState((state) => ({
+              members: state.members.map((m) =>
+                m.user_id === data.user_id
+                  ? {
+                      ...m,
+
+                      status: data.status,
+
+                      last_seen: data.last_seen,
+                    }
+                  : m,
+              ),
+            }));
+          }
         };
       } catch (err) {
-        //
-        // ❌ IGNORE
-        //
-        console.log("WS SKIPPED");
+        console.log("WS INIT ERROR", err);
       }
     };
 
+    //
+    // 🔥 INITIAL
+    //
     connectWS();
+
+    //
+    // 🔥 AUTH LISTENER
+    //
+    const listener = Hub.listen("auth", ({ payload }) => {
+      //
+      // LOGIN
+      //
+      if (payload.event === "signedIn") {
+        console.log("SIGNED IN");
+
+        connectWS();
+      }
+
+      //
+      // LOGOUT
+      //
+      if (payload.event === "signedOut") {
+        console.log("SIGNED OUT");
+
+        ws?.close();
+      }
+    });
+
+    return () => {
+      listener();
+
+      ws?.close();
+    };
   }, []);
 
   return <AppRoutes />;

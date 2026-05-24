@@ -297,7 +297,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
                           </div>
                         )}
 
-                        <div className="w-2 h-2 rounded-full bg-green-400 opacity-70 group-hover:opacity-100 transition" />
+                        {/* <div className="w-2 h-2 rounded-full bg-green-400 opacity-70 group-hover:opacity-100 transition" /> */}
                       </div>
                     </div>
                   ))
