@@ -262,7 +262,7 @@ export default function WorkspacePage() {
                   key={board.board_id}
                   onClick={() =>
                     navigate(
-                      `/workspace/${workspaceId}/board/${board.board_id}`,
+                      `/workspace/${workspaceId}/board/${board?.board_id || ""}`,
                     )
                   }
                   className="group relative p-3 rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] hover:from-white/10 hover:to-white/5 cursor-pointer transition-all duration-200 hover:scale-[1.03] hover:shadow-lg hover:shadow-indigo-500/10"
