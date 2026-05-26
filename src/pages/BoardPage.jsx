@@ -76,6 +76,24 @@ export default function BoardPage() {
     fetchData();
   }, [boardId, workspaceId]);
 
+  useEffect(() => {
+    const refreshBoard = async (e) => {
+      if (e.detail.board_id !== boardId) {
+        return;
+      }
+      console.log("BOARD EVENT RECEIVED:", e.detail);
+      const fullBoard = await getBoardFull(boardId);
+
+      setLists(fullBoard || []);
+    };
+
+    window.addEventListener("dojo-board-update", refreshBoard);
+
+    return () => {
+      window.removeEventListener("dojo-board-update", refreshBoard);
+    };
+  }, [boardId]);
+
   // ================= CLICK OUTSIDE MENU =================
   useEffect(() => {
     const handleClick = (e) => {
@@ -279,7 +297,21 @@ export default function BoardPage() {
 
     // save to DB
     try {
-      await await reorderListTasks(reorderedTasks);
+      await reorderListTasks(boardId, reorderedTasks);
+      console.log(window.dojoWS);
+
+      console.log(window.dojoWS?.readyState);
+      if (window.dojoWS && window.dojoWS.readyState === 1) {
+        console.log("SENDING BOARD UPDATE");
+
+        window.dojoWS.send(
+          JSON.stringify({
+            action: "broadcastBoard",
+
+            board_id: boardId,
+          }),
+        );
+      }
     } catch (err) {
       console.log("MOVE TASK ERROR:", err);
     }

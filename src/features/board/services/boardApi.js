@@ -5,29 +5,29 @@ const API_BASE = import.meta.env.VITE_API_BASE;
 
 
 export const getBoard = async (boardId, workspaceId) => {
-    try {
-        const session = await fetchAuthSession();
-        const token = session.tokens?.accessToken?.toString();
+  try {
+    const session = await fetchAuthSession();
+    const token = session.tokens?.accessToken?.toString();
 
-        const res = await axios.post(
-            `${API_BASE}/board/crud`,
-            {
-                action: "GET",
-                board_id: boardId,
-                workspace_id: workspaceId,
-            },
-            {
-                headers: {
-                    Authorization: token,
-                    "Content-Type": "application/json",
-                },
-            },
-        );
+    const res = await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action: "GET",
+        board_id: boardId,
+        workspace_id: workspaceId,
+      },
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
-        return res.data;
-    } catch (err) {
-        console.log("BOARD FETCH ERROR:", err);
-    }
+    return res.data;
+  } catch (err) {
+    console.log("BOARD FETCH ERROR:", err);
+  }
 };
 
 export const createList = async (
@@ -291,7 +291,7 @@ export const reorderTask = async (
 };
 
 export const reorderListTasks =
-  async (tasks) => {
+  async (boardId, tasks) => {
     try {
       const session =
         await fetchAuthSession();
@@ -304,7 +304,7 @@ export const reorderListTasks =
         {
           action:
             "REORDER_LIST_TASKS",
-
+          board_id: boardId,
           tasks,
         },
         {

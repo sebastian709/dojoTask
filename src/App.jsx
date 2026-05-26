@@ -45,6 +45,11 @@ function App() {
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
 
+          console.log("WS MESSAGE:", data);
+
+          //
+          // 🔥 PRESENCE UPDATE
+          //
           if (data.type === "PRESENCE_UPDATE") {
             useWorkspaceStore.setState((state) => ({
               members: state.members.map((m) =>
@@ -60,6 +65,25 @@ function App() {
               ),
             }));
           }
+
+          //
+          // 🔥 BOARD UPDATE
+          //
+          if (data.type === "BOARD_UPDATED") {
+            window.dispatchEvent(
+              new CustomEvent("dojo-board-update", {
+                detail: data,
+              }),
+            );
+          }
+        };
+
+        ws.onclose = () => {
+          console.log("WS CLOSED");
+        };
+
+        ws.onerror = (err) => {
+          console.log("WS ERROR", err);
         };
       } catch (err) {
         console.log("WS INIT ERROR", err);
@@ -70,6 +94,15 @@ function App() {
     // 🔥 INITIAL
     //
     connectWS();
+
+    //
+    // 🔥 CLOSE WS ON TAB CLOSE
+    //
+    const handleClose = () => {
+      ws?.close();
+    };
+
+    window.addEventListener("beforeunload", handleClose);
 
     //
     // 🔥 AUTH LISTENER
@@ -95,6 +128,8 @@ function App() {
     });
 
     return () => {
+      window.removeEventListener("beforeunload", handleClose);
+
       listener();
 
       ws?.close();
