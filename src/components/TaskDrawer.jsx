@@ -14,14 +14,108 @@ export default function TaskDrawer({
   task,
 }) {
   const [activeTab, setActiveTab] =
-    useState("comments");
+    useState(
+      window.innerWidth >= 1024
+        ? "comments"
+        : null
+    );
+
+  const isMobile =
+    window.innerWidth < 1024;
 
   if (!open || !task) {
     return null;
   }
 
+  const toggleTab = (tab) => {
+    setActiveTab((prev) =>
+      prev === tab ? null : tab
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center md:p-6">
+
+      {/* MOBILE FLOATING BUTTONS */}
+      <div className="lg:hidden fixed bottom-4 right-4 z-[1001] flex flex-col gap-3">
+
+        {/* COMMENTS */}
+        <button
+          onClick={() =>
+            toggleTab(
+              "comments"
+            )
+          }
+          className={`
+            w-14 h-14 rounded-2xl
+
+            flex items-center justify-center
+
+            text-white
+
+            transition-all
+
+            ${
+              activeTab ===
+              "comments"
+                ? `
+                  bg-indigo-500
+                  shadow-2xl shadow-indigo-500/30
+                `
+                : `
+                  bg-[#111827]
+                  border border-white/10
+                  shadow-2xl
+                `
+            }
+          `}
+        >
+
+          <MessageSquare
+            size={20}
+          />
+
+        </button>
+
+        {/* ACTIVITY */}
+        <button
+          onClick={() =>
+            toggleTab(
+              "activity"
+            )
+          }
+          className={`
+            w-14 h-14 rounded-2xl
+
+            flex items-center justify-center
+
+            text-white
+
+            transition-all
+
+            ${
+              activeTab ===
+              "activity"
+                ? `
+                  bg-indigo-500
+                  shadow-2xl shadow-indigo-500/30
+                `
+                : `
+                  bg-[#111827]
+                  border border-white/10
+                  shadow-2xl
+                `
+            }
+          `}
+        >
+
+          <Clock3
+            size={20}
+          />
+
+        </button>
+
+      </div>
 
       {/* MODAL */}
       <div
@@ -42,16 +136,51 @@ export default function TaskDrawer({
 
           flex flex-col
           lg:flex-row
+
+          relative
         "
       >
 
+        {/* MOBILE CLOSE */}
+        <button
+          onClick={onClose}
+          className="
+            lg:hidden
+
+            absolute top-4 right-4 z-[1002]
+
+            w-11 h-11 rounded-2xl
+
+            border border-white/10
+
+            bg-[#111827]/80
+
+            backdrop-blur-xl
+
+            flex items-center justify-center
+
+            text-white
+          "
+        >
+
+          <X size={18} />
+
+        </button>
+
         {/* ================= LEFT SIDE ================= */}
         <div
-          className="
+          className={`
             flex-1 overflow-y-auto
 
             lg:border-r lg:border-white/10
-          "
+
+            ${
+              activeTab &&
+              isMobile
+                ? "hidden"
+                : ""
+            }
+          `}
         >
 
           {/* COVER */}
@@ -240,11 +369,19 @@ export default function TaskDrawer({
 
         {/* ================= RIGHT SIDE ================= */}
         <div
-          className="
+          className={`
+            ${
+              activeTab
+                ? "flex"
+                : "hidden lg:flex"
+            }
+
+            lg:relative
+
             w-full
             lg:w-[420px]
 
-            h-[45vh]
+            h-[100dvh]
             lg:h-auto
 
             flex-shrink-0
@@ -252,17 +389,20 @@ export default function TaskDrawer({
             border-t border-white/10
             lg:border-t-0
 
-            bg-[#0f172a]/80
+            bg-[#0f172a]/95
+            lg:bg-[#0f172a]/80
+
             backdrop-blur-xl
 
-            flex flex-col
-          "
+            flex-col
+          `}
         >
 
           {/* HEADER */}
           <div className="px-5 sm:px-6 pt-5 sm:pt-6 border-b border-white/10">
 
-            <div className="flex items-start justify-between gap-4 mb-5">
+            {/* DESKTOP HEADER */}
+            <div className="hidden lg:flex items-start justify-between gap-4 mb-5">
 
               {/* TABS */}
               <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -270,7 +410,7 @@ export default function TaskDrawer({
                 {/* COMMENTS TAB */}
                 <button
                   onClick={() =>
-                    setActiveTab(
+                    toggleTab(
                       "comments"
                     )
                   }
@@ -284,17 +424,17 @@ export default function TaskDrawer({
                       activeTab ===
                       "comments"
                         ? `
-                          bg-indigo-500
-                          text-white
-                          shadow-lg shadow-indigo-500/20
-                        `
+                            bg-indigo-500
+                            text-white
+                            shadow-lg shadow-indigo-500/20
+                          `
                         : `
-                          bg-white/[0.03]
-                          border border-white/10
-                          text-gray-400
-                          hover:bg-white/[0.05]
-                          hover:text-white
-                        `
+                            bg-white/[0.03]
+                            border border-white/10
+                            text-gray-400
+                            hover:bg-white/[0.05]
+                            hover:text-white
+                          `
                     }
                   `}
                 >
@@ -304,7 +444,7 @@ export default function TaskDrawer({
                 {/* ACTIVITY TAB */}
                 <button
                   onClick={() =>
-                    setActiveTab(
+                    toggleTab(
                       "activity"
                     )
                   }
@@ -318,17 +458,17 @@ export default function TaskDrawer({
                       activeTab ===
                       "activity"
                         ? `
-                          bg-indigo-500
-                          text-white
-                          shadow-lg shadow-indigo-500/20
-                        `
+                            bg-indigo-500
+                            text-white
+                            shadow-lg shadow-indigo-500/20
+                          `
                         : `
-                          bg-white/[0.03]
-                          border border-white/10
-                          text-gray-400
-                          hover:bg-white/[0.05]
-                          hover:text-white
-                        `
+                            bg-white/[0.03]
+                            border border-white/10
+                            text-gray-400
+                            hover:bg-white/[0.05]
+                            hover:text-white
+                          `
                     }
                   `}
                 >
@@ -337,7 +477,7 @@ export default function TaskDrawer({
 
               </div>
 
-              {/* CLOSE BUTTON */}
+              {/* CLOSE */}
               <button
                 onClick={onClose}
                 className="
@@ -356,12 +496,13 @@ export default function TaskDrawer({
               </button>
 
             </div>
+
           </div>
 
           {/* CONTENT */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
 
-            {/* ================= COMMENTS ================= */}
+            {/* COMMENTS */}
             {activeTab ===
               "comments" && (
               <>
@@ -374,7 +515,6 @@ export default function TaskDrawer({
                     className="flex gap-3"
                   >
 
-                    {/* AVATAR */}
                     <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 flex-shrink-0">
 
                       <User2
@@ -383,10 +523,8 @@ export default function TaskDrawer({
 
                     </div>
 
-                    {/* CARD */}
                     <div className="flex-1 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
 
-                      {/* HEADER */}
                       <div className="flex items-center justify-between gap-3 mb-2">
 
                         <div className="flex items-center gap-2 flex-wrap">
@@ -407,11 +545,8 @@ export default function TaskDrawer({
 
                       </div>
 
-                      {/* MESSAGE */}
                       <p className="text-sm leading-relaxed text-gray-300">
                         This task needs more polishing before release.
-                        We should probably optimize websocket realtime
-                        updates and improve the board syncing logic.
                       </p>
 
                     </div>
@@ -421,7 +556,7 @@ export default function TaskDrawer({
               </>
             )}
 
-            {/* ================= ACTIVITY ================= */}
+            {/* ACTIVITY */}
             {activeTab ===
               "activity" && (
               <>
@@ -434,7 +569,6 @@ export default function TaskDrawer({
                     className="flex gap-3"
                   >
 
-                    {/* ICON */}
                     <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 flex-shrink-0">
 
                       <Clock3
@@ -443,7 +577,6 @@ export default function TaskDrawer({
 
                     </div>
 
-                    {/* CONTENT */}
                     <div className="flex-1 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
 
                       <div className="flex items-center justify-between gap-3 mb-2">
@@ -496,7 +629,9 @@ export default function TaskDrawer({
                     w-full resize-none bg-transparent
                     outline-none text-sm text-white
                     placeholder:text-gray-500
-                    min-h-[90px]
+
+                    min-h-[60px]
+                    sm:min-h-[90px]
                   "
                 />
 
