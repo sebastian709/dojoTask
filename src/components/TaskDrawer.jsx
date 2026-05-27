@@ -2,17 +2,26 @@ import {
   X,
   MessageSquare,
   Clock3,
-  User2,
   AlignLeft,
 } from "lucide-react";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
+
+import TaskAttachments from "./TaskAttachments";
+
+import TaskComments from "./TaskComments";
+
+import TaskActivity from "./TaskActivity";
 
 export default function TaskDrawer({
   open,
   onClose,
   task,
 }) {
+
   const [activeTab, setActiveTab] =
     useState(
       window.innerWidth >= 1024
@@ -20,18 +29,80 @@ export default function TaskDrawer({
         : null
     );
 
+  const [title, setTitle] =
+    useState("");
+
+  const [
+    description,
+    setDescription,
+  ] = useState("");
+
   const isMobile =
     window.innerWidth < 1024;
+
+  const toggleTab = (tab) => {
+
+    setActiveTab((prev) =>
+      prev === tab
+        ? null
+        : tab
+    );
+  };
+
+  useEffect(() => {
+
+    if (!task) return;
+
+    setTitle(
+      task.title || ""
+    );
+
+    setDescription(
+      task.description || ""
+    );
+
+  }, [task]);
+
+  useEffect(() => {
+
+    if (!task?.task_id)
+      return;
+
+    const timeout =
+      setTimeout(async () => {
+
+        try {
+
+          console.log(
+            "AUTOSAVE:",
+            {
+              title,
+              description,
+            }
+          );
+
+        } catch (err) {
+
+          console.log(
+            "AUTOSAVE ERROR",
+            err
+          );
+        }
+
+      }, 800);
+
+    return () =>
+      clearTimeout(timeout);
+
+  }, [
+    title,
+    description,
+    task,
+  ]);
 
   if (!open || !task) {
     return null;
   }
-
-  const toggleTab = (tab) => {
-    setActiveTab((prev) =>
-      prev === tab ? null : tab
-    );
-  };
 
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center md:p-6">
@@ -39,7 +110,6 @@ export default function TaskDrawer({
       {/* MOBILE FLOATING BUTTONS */}
       <div className="lg:hidden fixed bottom-4 right-4 z-[1001] flex flex-col gap-3">
 
-        {/* COMMENTS */}
         <button
           onClick={() =>
             toggleTab(
@@ -48,12 +118,8 @@ export default function TaskDrawer({
           }
           className={`
             w-14 h-14 rounded-2xl
-
             flex items-center justify-center
-
-            text-white
-
-            transition-all
+            text-white transition-all
 
             ${
               activeTab ===
@@ -77,7 +143,6 @@ export default function TaskDrawer({
 
         </button>
 
-        {/* ACTIVITY */}
         <button
           onClick={() =>
             toggleTab(
@@ -86,12 +151,8 @@ export default function TaskDrawer({
           }
           className={`
             w-14 h-14 rounded-2xl
-
             flex items-center justify-center
-
-            text-white
-
-            transition-all
+            text-white transition-all
 
             ${
               activeTab ===
@@ -167,7 +228,7 @@ export default function TaskDrawer({
 
         </button>
 
-        {/* ================= LEFT SIDE ================= */}
+        {/* LEFT SIDE */}
         <div
           className={`
             flex-1 overflow-y-auto
@@ -196,14 +257,12 @@ export default function TaskDrawer({
             "
           >
 
-            {/* IMAGE */}
             <img
               src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop"
               alt="cover"
               className="w-full h-full object-cover"
             />
 
-            {/* OVERLAY */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-[#0b1120]/30 to-transparent" />
 
           </div>
@@ -224,7 +283,6 @@ export default function TaskDrawer({
 
               <div className="flex items-start gap-4">
 
-                {/* ICON */}
                 <div className="w-14 h-14 rounded-3xl border border-indigo-500/20 bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
 
                   <AlignLeft
@@ -234,11 +292,21 @@ export default function TaskDrawer({
 
                 </div>
 
-                {/* TITLE */}
                 <div className="flex-1">
 
-                  <h2
+                  <textarea
+                    value={title}
+                    onChange={(e) =>
+                      setTitle(
+                        e.target.value
+                      )
+                    }
                     className="
+                      w-full
+                      bg-transparent
+                      resize-none
+                      outline-none
+
                       text-2xl
                       md:text-3xl
 
@@ -246,9 +314,7 @@ export default function TaskDrawer({
                       text-white
                       leading-tight
                     "
-                  >
-                    {task.title}
-                  </h2>
+                  />
 
                   <p className="text-sm text-gray-400 mt-3">
 
@@ -281,93 +347,48 @@ export default function TaskDrawer({
 
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 min-h-[220px] text-sm leading-relaxed text-gray-300 whitespace-pre-wrap shadow-inner">
+              <textarea
+                value={description}
+                onChange={(e) =>
+                  setDescription(
+                    e.target.value
+                  )
+                }
+                placeholder="Write task description..."
+                className="
+                  w-full
 
-                {task.description ||
-                  "No description added yet."}
+                  rounded-3xl
 
-              </div>
+                  border border-white/10
+
+                  bg-white/[0.03]
+
+                  p-6
+
+                  min-h-[220px]
+
+                  text-sm leading-relaxed
+
+                  text-gray-300
+
+                  resize-none
+
+                  outline-none
+
+                  placeholder:text-gray-500
+                "
+              />
+
             </div>
 
             {/* ATTACHMENTS */}
-            <div>
-
-              <div className="flex items-center gap-2 mb-4">
-
-                <MessageSquare
-                  size={16}
-                  className="text-gray-400"
-                />
-
-                <h3 className="text-sm font-medium text-white">
-                  Attachments
-                </h3>
-
-              </div>
-
-              <div
-                className="
-                  grid
-                  grid-cols-1
-                  sm:grid-cols-2
-
-                  gap-4
-                "
-              >
-
-                {Array.from({
-                  length: 4,
-                }).map((_, i) => (
-
-                  <div
-                    key={i}
-                    className="
-                      group relative overflow-hidden
-                      rounded-3xl border border-white/10
-                      bg-white/[0.03]
-                      aspect-video
-                      cursor-pointer
-                    "
-                  >
-
-                    {/* IMAGE */}
-                    <img
-                      src={`https://picsum.photos/600/400?random=${i}`}
-                      alt="attachment"
-                      className="
-                        w-full h-full object-cover
-                        transition duration-300
-                        group-hover:scale-105
-                      "
-                    />
-
-                    {/* OVERLAY */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-
-                    {/* LABEL */}
-                    <div className="absolute bottom-3 left-3 right-3">
-
-                      <p className="text-sm font-medium text-white truncate">
-                        Attachment-{i + 1}.png
-                      </p>
-
-                      <p className="text-[11px] text-gray-300 mt-1">
-                        2.4 MB
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                ))}
-
-              </div>
-            </div>
+            <TaskAttachments />
 
           </div>
         </div>
 
-        {/* ================= RIGHT SIDE ================= */}
+        {/* RIGHT SIDE */}
         <div
           className={`
             ${
@@ -401,13 +422,11 @@ export default function TaskDrawer({
           {/* HEADER */}
           <div className="px-5 sm:px-6 pt-5 sm:pt-6 border-b border-white/10">
 
-            {/* DESKTOP HEADER */}
             <div className="hidden lg:flex items-start justify-between gap-4 mb-5">
 
               {/* TABS */}
               <div className="flex items-center gap-2 overflow-x-auto pb-1">
 
-                {/* COMMENTS TAB */}
                 <button
                   onClick={() =>
                     toggleTab(
@@ -424,24 +443,21 @@ export default function TaskDrawer({
                       activeTab ===
                       "comments"
                         ? `
-                            bg-indigo-500
-                            text-white
-                            shadow-lg shadow-indigo-500/20
-                          `
+                          bg-indigo-500
+                          text-white
+                          shadow-lg shadow-indigo-500/20
+                        `
                         : `
-                            bg-white/[0.03]
-                            border border-white/10
-                            text-gray-400
-                            hover:bg-white/[0.05]
-                            hover:text-white
-                          `
+                          bg-white/[0.03]
+                          border border-white/10
+                          text-gray-400
+                        `
                     }
                   `}
                 >
                   Comments
                 </button>
 
-                {/* ACTIVITY TAB */}
                 <button
                   onClick={() =>
                     toggleTab(
@@ -458,17 +474,15 @@ export default function TaskDrawer({
                       activeTab ===
                       "activity"
                         ? `
-                            bg-indigo-500
-                            text-white
-                            shadow-lg shadow-indigo-500/20
-                          `
+                          bg-indigo-500
+                          text-white
+                          shadow-lg shadow-indigo-500/20
+                        `
                         : `
-                            bg-white/[0.03]
-                            border border-white/10
-                            text-gray-400
-                            hover:bg-white/[0.05]
-                            hover:text-white
-                          `
+                          bg-white/[0.03]
+                          border border-white/10
+                          text-gray-400
+                        `
                     }
                   `}
                 >
@@ -502,116 +516,14 @@ export default function TaskDrawer({
           {/* CONTENT */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
 
-            {/* COMMENTS */}
             {activeTab ===
               "comments" && (
-              <>
-                {Array.from({
-                  length: 20,
-                }).map((_, i) => (
-
-                  <div
-                    key={i}
-                    className="flex gap-3"
-                  >
-
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 flex-shrink-0">
-
-                      <User2
-                        size={16}
-                      />
-
-                    </div>
-
-                    <div className="flex-1 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
-
-                      <div className="flex items-center justify-between gap-3 mb-2">
-
-                        <div className="flex items-center gap-2 flex-wrap">
-
-                          <span className="text-sm font-medium text-white">
-                            Sebastian
-                          </span>
-
-                          <span className="text-xs text-gray-500">
-                            commented
-                          </span>
-
-                        </div>
-
-                        <span className="text-[11px] text-gray-600">
-                          {i + 1}m ago
-                        </span>
-
-                      </div>
-
-                      <p className="text-sm leading-relaxed text-gray-300">
-                        This task needs more polishing before release.
-                      </p>
-
-                    </div>
-                  </div>
-
-                ))}
-              </>
+              <TaskComments />
             )}
 
-            {/* ACTIVITY */}
             {activeTab ===
               "activity" && (
-              <>
-                {Array.from({
-                  length: 20,
-                }).map((_, i) => (
-
-                  <div
-                    key={i}
-                    className="flex gap-3"
-                  >
-
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 flex-shrink-0">
-
-                      <Clock3
-                        size={16}
-                      />
-
-                    </div>
-
-                    <div className="flex-1 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
-
-                      <div className="flex items-center justify-between gap-3 mb-2">
-
-                        <div className="flex items-center gap-2 flex-wrap">
-
-                          <span className="text-sm font-medium text-white">
-                            Sebastian
-                          </span>
-
-                          <span className="text-xs text-gray-500">
-                            moved task to
-                          </span>
-
-                          <span className="px-2 py-1 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[11px] text-indigo-300">
-                            In Progress
-                          </span>
-
-                        </div>
-
-                        <span className="text-[11px] text-gray-600">
-                          {i + 1}h ago
-                        </span>
-
-                      </div>
-
-                      <p className="text-sm text-gray-400">
-                        Updated board structure and synchronized realtime websocket events.
-                      </p>
-
-                    </div>
-                  </div>
-
-                ))}
-              </>
+              <TaskActivity />
             )}
 
           </div>
@@ -652,10 +564,12 @@ export default function TaskDrawer({
                 </div>
 
               </div>
+
             </div>
           )}
 
         </div>
+
       </div>
     </div>
   );
