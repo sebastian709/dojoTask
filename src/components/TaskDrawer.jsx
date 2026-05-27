@@ -40,12 +40,16 @@ export default function TaskDrawer({ open, onClose, task }) {
         await updateTaskDetails({
           task_id: task.task_id,
 
+          board_id: task.board_id,
+
           title,
 
           description,
         });
 
         window.broadcastBoard?.(task.board_id);
+
+        console.log(task.board_id);
       } catch (err) {
         console.log("AUTOSAVE ERROR", err);
       }

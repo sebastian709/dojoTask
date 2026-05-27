@@ -57,7 +57,19 @@ function App() {
         };
 
         ws.onmessage = (event) => {
-          const data = JSON.parse(event.data);
+          if (!event.data) {
+            return;
+          }
+
+          let data = null;
+
+          try {
+            data = JSON.parse(event.data);
+          } catch (err) {
+            console.log("INVALID WS JSON", event.data);
+
+            return;
+          }
 
           console.log("WS MESSAGE:", data);
 
