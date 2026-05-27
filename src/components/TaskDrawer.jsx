@@ -1,14 +1,7 @@
-import {
-  X,
-  MessageSquare,
-  Clock3,
-  AlignLeft,
-} from "lucide-react";
+import { X, MessageSquare, Clock3, AlignLeft } from "lucide-react";
 
-import {
-  useState,
-  useEffect,
-} from "react";
+import { useState, useEffect } from "react";
+import { updateTaskDetails } from "../features/board/services/boardApi";
 
 import TaskAttachments from "./TaskAttachments";
 
@@ -16,89 +9,50 @@ import TaskComments from "./TaskComments";
 
 import TaskActivity from "./TaskActivity";
 
-export default function TaskDrawer({
-  open,
-  onClose,
-  task,
-}) {
+export default function TaskDrawer({ open, onClose, task }) {
+  const [activeTab, setActiveTab] = useState(
+    window.innerWidth >= 1024 ? "comments" : null,
+  );
 
-  const [activeTab, setActiveTab] =
-    useState(
-      window.innerWidth >= 1024
-        ? "comments"
-        : null
-    );
+  const [title, setTitle] = useState("");
 
-  const [title, setTitle] =
-    useState("");
+  const [description, setDescription] = useState("");
 
-  const [
-    description,
-    setDescription,
-  ] = useState("");
-
-  const isMobile =
-    window.innerWidth < 1024;
+  const isMobile = window.innerWidth < 1024;
 
   const toggleTab = (tab) => {
-
-    setActiveTab((prev) =>
-      prev === tab
-        ? null
-        : tab
-    );
+    setActiveTab((prev) => (prev === tab ? null : tab));
   };
 
   useEffect(() => {
-
     if (!task) return;
 
-    setTitle(
-      task.title || ""
-    );
+    setTitle(task.title || "");
 
-    setDescription(
-      task.description || ""
-    );
-
+    setDescription(task.description || "");
   }, [task]);
 
   useEffect(() => {
+    if (!task?.task_id) return;
 
-    if (!task?.task_id)
-      return;
+    const timeout = setTimeout(async () => {
+      try {
+        await updateTaskDetails({
+          task_id: task.task_id,
 
-    const timeout =
-      setTimeout(async () => {
+          title,
 
-        try {
+          description,
+        });
 
-          console.log(
-            "AUTOSAVE:",
-            {
-              title,
-              description,
-            }
-          );
+        window.broadcastBoard?.(task.board_id);
+      } catch (err) {
+        console.log("AUTOSAVE ERROR", err);
+      }
+    }, 800);
 
-        } catch (err) {
-
-          console.log(
-            "AUTOSAVE ERROR",
-            err
-          );
-        }
-
-      }, 800);
-
-    return () =>
-      clearTimeout(timeout);
-
-  }, [
-    title,
-    description,
-    task,
-  ]);
+    return () => clearTimeout(timeout);
+  }, [title, description, task]);
 
   if (!open || !task) {
     return null;
@@ -106,24 +60,17 @@ export default function TaskDrawer({
 
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center md:p-6">
-
       {/* MOBILE FLOATING BUTTONS */}
       <div className="lg:hidden fixed bottom-4 right-4 z-[1001] flex flex-col gap-3">
-
         <button
-          onClick={() =>
-            toggleTab(
-              "comments"
-            )
-          }
+          onClick={() => toggleTab("comments")}
           className={`
             w-14 h-14 rounded-2xl
             flex items-center justify-center
             text-white transition-all
 
             ${
-              activeTab ===
-              "comments"
+              activeTab === "comments"
                 ? `
                   bg-indigo-500
                   shadow-2xl shadow-indigo-500/30
@@ -136,27 +83,18 @@ export default function TaskDrawer({
             }
           `}
         >
-
-          <MessageSquare
-            size={20}
-          />
-
+          <MessageSquare size={20} />
         </button>
 
         <button
-          onClick={() =>
-            toggleTab(
-              "activity"
-            )
-          }
+          onClick={() => toggleTab("activity")}
           className={`
             w-14 h-14 rounded-2xl
             flex items-center justify-center
             text-white transition-all
 
             ${
-              activeTab ===
-              "activity"
+              activeTab === "activity"
                 ? `
                   bg-indigo-500
                   shadow-2xl shadow-indigo-500/30
@@ -169,13 +107,8 @@ export default function TaskDrawer({
             }
           `}
         >
-
-          <Clock3
-            size={20}
-          />
-
+          <Clock3 size={20} />
         </button>
-
       </div>
 
       {/* MODAL */}
@@ -201,7 +134,6 @@ export default function TaskDrawer({
           relative
         "
       >
-
         {/* MOBILE CLOSE */}
         <button
           onClick={onClose}
@@ -223,9 +155,7 @@ export default function TaskDrawer({
             text-white
           "
         >
-
           <X size={18} />
-
         </button>
 
         {/* LEFT SIDE */}
@@ -235,15 +165,9 @@ export default function TaskDrawer({
 
             lg:border-r lg:border-white/10
 
-            ${
-              activeTab &&
-              isMobile
-                ? "hidden"
-                : ""
-            }
+            ${activeTab && isMobile ? "hidden" : ""}
           `}
         >
-
           {/* COVER */}
           <div
             className="
@@ -256,7 +180,6 @@ export default function TaskDrawer({
               border-b border-white/10
             "
           >
-
             <img
               src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop"
               alt="cover"
@@ -264,7 +187,6 @@ export default function TaskDrawer({
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-[#0b1120]/30 to-transparent" />
-
           </div>
 
           {/* CONTENT */}
@@ -277,30 +199,17 @@ export default function TaskDrawer({
               space-y-8
             "
           >
-
             {/* TITLE */}
             <div>
-
               <div className="flex items-start gap-4">
-
                 <div className="w-14 h-14 rounded-3xl border border-indigo-500/20 bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-
-                  <AlignLeft
-                    size={22}
-                    className="text-indigo-300"
-                  />
-
+                  <AlignLeft size={22} className="text-indigo-300" />
                 </div>
 
                 <div className="flex-1">
-
                   <textarea
                     value={title}
-                    onChange={(e) =>
-                      setTitle(
-                        e.target.value
-                      )
-                    }
+                    onChange={(e) => setTitle(e.target.value)}
                     className="
                       w-full
                       bg-transparent
@@ -317,43 +226,23 @@ export default function TaskDrawer({
                   />
 
                   <p className="text-sm text-gray-400 mt-3">
-
-                    in list{" "}
-
-                    <span className="text-indigo-300">
-                      Development
-                    </span>
-
+                    in list <span className="text-indigo-300">Development</span>
                   </p>
-
                 </div>
-
               </div>
             </div>
 
             {/* DESCRIPTION */}
             <div>
-
               <div className="flex items-center gap-2 mb-4">
+                <AlignLeft size={16} className="text-gray-400" />
 
-                <AlignLeft
-                  size={16}
-                  className="text-gray-400"
-                />
-
-                <h3 className="text-sm font-medium text-white">
-                  Description
-                </h3>
-
+                <h3 className="text-sm font-medium text-white">Description</h3>
               </div>
 
               <textarea
                 value={description}
-                onChange={(e) =>
-                  setDescription(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Write task description..."
                 className="
                   w-full
@@ -379,23 +268,17 @@ export default function TaskDrawer({
                   placeholder:text-gray-500
                 "
               />
-
             </div>
 
             {/* ATTACHMENTS */}
             <TaskAttachments />
-
           </div>
         </div>
 
         {/* RIGHT SIDE */}
         <div
           className={`
-            ${
-              activeTab
-                ? "flex"
-                : "hidden lg:flex"
-            }
+            ${activeTab ? "flex" : "hidden lg:flex"}
 
             lg:relative
 
@@ -418,21 +301,13 @@ export default function TaskDrawer({
             flex-col
           `}
         >
-
           {/* HEADER */}
           <div className="px-5 sm:px-6 pt-5 sm:pt-6 border-b border-white/10">
-
             <div className="hidden lg:flex items-start justify-between gap-4 mb-5">
-
               {/* TABS */}
               <div className="flex items-center gap-2 overflow-x-auto pb-1">
-
                 <button
-                  onClick={() =>
-                    toggleTab(
-                      "comments"
-                    )
-                  }
+                  onClick={() => toggleTab("comments")}
                   className={`
                     px-4 py-2 rounded-2xl
                     text-sm font-medium
@@ -440,8 +315,7 @@ export default function TaskDrawer({
                     transition
 
                     ${
-                      activeTab ===
-                      "comments"
+                      activeTab === "comments"
                         ? `
                           bg-indigo-500
                           text-white
@@ -459,11 +333,7 @@ export default function TaskDrawer({
                 </button>
 
                 <button
-                  onClick={() =>
-                    toggleTab(
-                      "activity"
-                    )
-                  }
+                  onClick={() => toggleTab("activity")}
                   className={`
                     px-4 py-2 rounded-2xl
                     text-sm font-medium
@@ -471,8 +341,7 @@ export default function TaskDrawer({
                     transition
 
                     ${
-                      activeTab ===
-                      "activity"
+                      activeTab === "activity"
                         ? `
                           bg-indigo-500
                           text-white
@@ -488,7 +357,6 @@ export default function TaskDrawer({
                 >
                   Activity
                 </button>
-
               </div>
 
               {/* CLOSE */}
@@ -504,37 +372,22 @@ export default function TaskDrawer({
                   text-white flex-shrink-0
                 "
               >
-
                 <X size={18} />
-
               </button>
-
             </div>
-
           </div>
 
           {/* CONTENT */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+            {activeTab === "comments" && <TaskComments />}
 
-            {activeTab ===
-              "comments" && (
-              <TaskComments />
-            )}
-
-            {activeTab ===
-              "activity" && (
-              <TaskActivity />
-            )}
-
+            {activeTab === "activity" && <TaskActivity />}
           </div>
 
           {/* INPUT */}
-          {activeTab ===
-            "comments" && (
+          {activeTab === "comments" && (
             <div className="border-t border-white/10 p-4 sm:p-5">
-
               <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-3">
-
                 <textarea
                   placeholder="Write a comment..."
                   className="
@@ -548,7 +401,6 @@ export default function TaskDrawer({
                 />
 
                 <div className="flex justify-end mt-3">
-
                   <button
                     className="
                       px-4 py-2 rounded-2xl
@@ -560,16 +412,11 @@ export default function TaskDrawer({
                   >
                     Send
                   </button>
-
                 </div>
-
               </div>
-
             </div>
           )}
-
         </div>
-
       </div>
     </div>
   );

@@ -327,7 +327,7 @@ export const reorderListTasks =
   };
 
 
-  export const getTask =
+export const getTask =
   async (taskId) => {
 
     const session =
@@ -357,7 +357,7 @@ export const reorderListTasks =
     return res.data.task;
   };
 
-  export const updateTask =
+export const updateTask =
   async (task) => {
 
     const session =
@@ -386,7 +386,7 @@ export const reorderListTasks =
     return res.data;
   };
 
-  export const getTaskThreads =
+export const getTaskThreads =
   async (taskId) => {
 
     const session =
@@ -416,7 +416,7 @@ export const reorderListTasks =
     return res.data.threads;
   };
 
-  export const createTaskThread =
+export const createTaskThread =
   async (
     taskId,
     message
@@ -449,4 +449,54 @@ export const reorderListTasks =
       );
 
     return res.data.thread;
+  };
+
+export const updateTaskDetails =
+  async ({
+    task_id,
+    title,
+    description,
+  }) => {
+
+    try {
+
+      const session =
+        await fetchAuthSession();
+
+      const token =
+        session.tokens?.accessToken?.toString();
+
+      const res =
+        await axios.post(
+          `${API_BASE}/board/crud`,
+          {
+            action:
+              "UPDATE_TASK_DETAILS",
+
+            task_id,
+
+            title,
+
+            description,
+          },
+          {
+            headers: {
+              Authorization:
+                token,
+
+              "Content-Type":
+                "application/json",
+            },
+          }
+        );
+
+      return res.data;
+
+    } catch (err) {
+
+      console.log(
+        "UPDATE TASK ERROR:",
+        err
+      );
+    }
   };
