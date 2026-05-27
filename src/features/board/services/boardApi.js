@@ -325,3 +325,128 @@ export const reorderListTasks =
       );
     }
   };
+
+
+  export const getTask =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data.task;
+  };
+
+  export const updateTask =
+  async (task) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "UPDATE_TASK",
+
+          ...task,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+  export const getTaskThreads =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK_THREADS",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data.threads;
+  };
+
+  export const createTaskThread =
+  async (
+    taskId,
+    message
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "CREATE_TASK_THREAD",
+
+          task_id:
+            taskId,
+
+          message,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data.thread;
+  };

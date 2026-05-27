@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 
 import NavBar from "../components/NavBar";
+import TaskDrawer from "../components/TaskDrawer";
 
 export default function BoardPage() {
   const { boardId, workspaceId } = useParams();
@@ -32,6 +33,8 @@ export default function BoardPage() {
   const [board, setBoard] = useState(null);
 
   const [lists, setLists] = useState([]);
+
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const [openMenu, setOpenMenu] = useState(null);
 
@@ -118,6 +121,8 @@ export default function BoardPage() {
           tasks: [],
         },
       ]);
+
+      window.broadcastBoard?.(boardId);
     } catch (err) {
       console.log("ADD LIST ERROR:", err);
     }
@@ -154,6 +159,7 @@ export default function BoardPage() {
 
     try {
       await updateList(boardId, editingList.id, editingList.text);
+      window.broadcastBoard?.(boardId);
     } catch (err) {
       console.log("UPDATE LIST ERROR:", err);
     }
@@ -197,6 +203,7 @@ export default function BoardPage() {
         listId: null,
         text: "",
       });
+      window.broadcastBoard?.(boardId);
     } catch (err) {
       console.log("SAVE TASK ERROR:", err);
     }
@@ -298,20 +305,7 @@ export default function BoardPage() {
     // save to DB
     try {
       await reorderListTasks(boardId, reorderedTasks);
-      console.log(window.dojoWS);
-
-      console.log(window.dojoWS?.readyState);
-      if (window.dojoWS && window.dojoWS.readyState === 1) {
-        console.log("SENDING BOARD UPDATE");
-
-        window.dojoWS.send(
-          JSON.stringify({
-            action: "broadcastBoard",
-
-            board_id: boardId,
-          }),
-        );
-      }
+      window.broadcastBoard?.(boardId);
     } catch (err) {
       console.log("MOVE TASK ERROR:", err);
     }
@@ -333,6 +327,7 @@ export default function BoardPage() {
             : list,
         ),
       );
+      window.broadcastBoard?.(boardId);
     } catch (err) {
       console.log("DELETE LIST ERROR:", err);
     } finally {
@@ -607,6 +602,7 @@ export default function BoardPage() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
+                                onClick={() => setSelectedTask(task)}
                                 className="p-2 bg-white/10 rounded mb-2 text-sm cursor-grab active:cursor-grabbing"
                               >
                                 <div
@@ -673,6 +669,12 @@ export default function BoardPage() {
           </div>
         </div>
       </DragDropContext>
+
+      <TaskDrawer
+        open={!!selectedTask}
+        task={selectedTask}
+        onClose={() => setSelectedTask(null)}
+      />
 
       <WorkspaceShareDrawer
         open={shareOpen}

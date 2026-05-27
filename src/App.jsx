@@ -38,6 +38,20 @@ function App() {
 
         window.dojoWS = ws;
 
+        window.broadcastBoard = (boardId) => {
+          if (!window.dojoWS || window.dojoWS.readyState !== 1) {
+            return;
+          }
+
+          window.dojoWS.send(
+            JSON.stringify({
+              action: "broadcastBoard",
+
+              board_id: boardId,
+            }),
+          );
+        };
+
         ws.onopen = () => {
           console.log("WS CONNECTED");
         };
