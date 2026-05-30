@@ -500,3 +500,319 @@ export const updateTaskDetails =
       );
     }
   };
+
+export const getTaskAssignees =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK_ASSIGNEES",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data.assignees;
+  };
+
+export const addTaskAssignee =
+  async (
+    taskId,
+    userId
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "ADD_TASK_ASSIGNEE",
+
+        task_id:
+          taskId,
+
+        user_id:
+          userId,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };
+
+export const removeTaskAssignee =
+  async (
+    taskId,
+    userId
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "REMOVE_TASK_ASSIGNEE",
+
+        task_id:
+          taskId,
+
+        user_id:
+          userId,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };
+
+export const getWorkspaceMembers =
+  async (
+    workspaceId
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_WORKSPACE_MEMBERS",
+
+          workspace_id:
+            workspaceId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data.members;
+  };
+
+export const updateTaskProperties =
+  async ({
+    task_id,
+    due_date,
+    priority,
+    labels,
+  }) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "UPDATE_TASK_PROPERTIES",
+
+        task_id,
+
+        due_date,
+
+        priority,
+
+        labels,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };
+
+export const getTaskDetails =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK_DETAILS",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+            "Content-Type":
+              "application/json",
+          },
+        }
+      );
+
+    return res.data.task;
+  };
+export const generateTaskCoverUploadUrl =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GENERATE_TASK_COVER_UPLOAD_URL",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+            "Content-Type":
+              "application/json",
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+export const saveTaskCover =
+  async (
+    taskId,
+    coverUrl
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "SAVE_TASK_COVER",
+
+          task_id:
+            taskId,
+
+          cover_url:
+            coverUrl,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+            "Content-Type":
+              "application/json",
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+export const removeTaskCover =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "REMOVE_TASK_COVER",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+            "Content-Type":
+              "application/json",
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+export const uploadTaskCover =
+  async (
+    uploadUrl,
+    file
+  ) => {
+
+    await axios.put(
+      uploadUrl,
+      file,
+      {
+        headers: {
+          "Content-Type":
+            file.type,
+        },
+      }
+    );
+  };

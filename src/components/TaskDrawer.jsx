@@ -3,13 +3,19 @@ import { X, MessageSquare, Clock3, AlignLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { updateTaskDetails } from "../features/board/services/boardApi";
 
-import TaskAttachments from "./TaskAttachments";
+import TaskAttachments from "./task/TaskAttachments";
 
-import TaskComments from "./TaskComments";
+import TaskComments from "./task/TaskComments";
 
-import TaskActivity from "./TaskActivity";
+import TaskActivity from "./task/TaskActivity";
 
-export default function TaskDrawer({ open, onClose, task }) {
+import TaskProperties from "./task/TaskProperties";
+
+import TaskAssignees from "./task/TaskAssignee";
+
+import TaskCover from "./task/TaskCover";
+
+export default function TaskDrawer({ open, onClose, task, workspaceId }) {
   const [activeTab, setActiveTab] = useState(
     window.innerWidth >= 1024 ? "comments" : null,
   );
@@ -17,6 +23,8 @@ export default function TaskDrawer({ open, onClose, task }) {
   const [title, setTitle] = useState("");
 
   const [description, setDescription] = useState("");
+
+  const [loaded, setLoaded] = useState(false);
 
   const isMobile = window.innerWidth < 1024;
 
@@ -30,9 +38,13 @@ export default function TaskDrawer({ open, onClose, task }) {
     setTitle(task.title || "");
 
     setDescription(task.description || "");
+
+    setLoaded(true);
   }, [task]);
 
   useEffect(() => {
+    if (!loaded) return;
+
     if (!task?.task_id) return;
 
     const timeout = setTimeout(async () => {
@@ -48,15 +60,13 @@ export default function TaskDrawer({ open, onClose, task }) {
         });
 
         window.broadcastBoard?.(task.board_id);
-
-        console.log(task.board_id);
       } catch (err) {
         console.log("AUTOSAVE ERROR", err);
       }
     }, 800);
 
     return () => clearTimeout(timeout);
-  }, [title, description, task]);
+  }, [title, description, loaded]);
 
   if (!open || !task) {
     return null;
@@ -172,26 +182,12 @@ export default function TaskDrawer({ open, onClose, task }) {
             ${activeTab && isMobile ? "hidden" : ""}
           `}
         >
-          {/* COVER */}
-          <div
-            className="
-              relative
-              h-[180px]
-              sm:h-[220px]
-              md:h-[260px]
-
-              overflow-hidden
-              border-b border-white/10
-            "
-          >
-            <img
-              src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop"
-              alt="cover"
-              className="w-full h-full object-cover"
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-[#0b1120]/30 to-transparent" />
-          </div>
+          <TaskCover
+            task={task}
+            onRefresh={() => {
+              window.broadcastBoard?.(task.board_id);
+            }}
+          />
 
           {/* CONTENT */}
           <div
@@ -205,36 +201,91 @@ export default function TaskDrawer({ open, onClose, task }) {
           >
             {/* TITLE */}
             <div>
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-3xl border border-indigo-500/20 bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
-                  <AlignLeft size={22} className="text-indigo-300" />
+              <div
+                className="
+                  flex items-start gap-4
+                "
+              >
+                {/* ICON */}
+                <div
+                  className="
+                    w-12 h-12
+
+                    rounded-2xl
+
+                    border border-indigo-500/20
+
+                    bg-indigo-500/10
+
+                    flex items-center justify-center
+
+                    flex-shrink-0
+                  "
+                >
+                  <AlignLeft
+                    size={18}
+                    className="
+                      text-indigo-300
+                    "
+                  />
                 </div>
 
+                {/* CONTENT */}
                 <div className="flex-1">
+                  <div
+                    className="
+                      flex items-center gap-2
+                      mb-2
+                    "
+                  >
+                    <span
+                      className="
+                        px-2 py-1
+
+                        rounded-xl
+
+                        bg-indigo-500/10
+
+                        border border-indigo-500/20
+
+                        text-[11px]
+
+                        text-indigo-300
+                      "
+                    >
+                      Development
+                    </span>
+                  </div>
+
                   <textarea
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    rows={2}
                     className="
-                      w-full
-                      bg-transparent
-                      resize-none
-                      outline-none
+                    w-full
 
-                      text-2xl
-                      md:text-3xl
+                    bg-transparent
 
-                      font-semibold
-                      text-white
-                      leading-tight
-                    "
+                    resize-none
+
+                    outline-none
+
+                    text-3xl
+
+                    font-bold
+
+                    tracking-tight
+
+                    text-white
+
+                    leading-tight
+                  "
                   />
-
-                  <p className="text-sm text-gray-400 mt-3">
-                    in list <span className="text-indigo-300">Development</span>
-                  </p>
                 </div>
               </div>
             </div>
+
+            <TaskProperties task={task} />
 
             {/* DESCRIPTION */}
             <div>
@@ -273,6 +324,8 @@ export default function TaskDrawer({ open, onClose, task }) {
                 "
               />
             </div>
+
+            <TaskAssignees task={task} workspaceId={workspaceId} />
 
             {/* ATTACHMENTS */}
             <TaskAttachments />

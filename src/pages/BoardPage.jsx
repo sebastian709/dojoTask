@@ -673,6 +673,7 @@ export default function BoardPage() {
       <TaskDrawer
         open={!!selectedTask}
         task={selectedTask}
+        workspaceId={workspaceId}
         onClose={() => setSelectedTask(null)}
       />
 
