@@ -15,49 +15,25 @@ import {
   X,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function TaskAttachments() {
+import {
+  getTaskAttachments,
+  generateAttachmentUploadUrl,
+  saveAttachment,
+  uploadAttachment,
+  deleteAttachment,
+} from "../../features/board/services/boardApi";
+
+export default function TaskAttachments({ task }) {
   //
   // 🔥 COLLAPSE
   //
   const [showUploader, setShowUploader] = useState(false);
 
-  //
-  // 🔥 PREVIEW FILES
-  //
-  const [previewFiles, setPreviewFiles] = useState([]);
+  const [attachments, setAttachments] = useState([]);
 
-  //
-  // 🔥 MOCK DATA
-  //
-  const [attachments] = useState([
-    {
-      type: "image",
-      name: "UI-Preview.png",
-      size: "2.4 MB",
-      url: "https://picsum.photos/600/400?random=1",
-    },
-
-    {
-      type: "video",
-      name: "Demo.mp4",
-      size: "12.2 MB",
-      url: "https://picsum.photos/600/400?random=2",
-    },
-
-    {
-      type: "pdf",
-      name: "Project-Brief.pdf",
-      size: "1.1 MB",
-    },
-
-    {
-      type: "word",
-      name: "Requirements.docx",
-      size: "900 KB",
-    },
-  ]);
+  const [uploading, setUploading] = useState(false);
 
   //
   // 🔥 FILE TYPE
@@ -143,33 +119,70 @@ export default function TaskAttachments() {
     }
   };
 
-  //
-  // 🔥 HANDLE FILES
-  //
-  const handleFiles = (files) => {
-    const mapped = Array.from(files).map((file) => ({
-      file,
+  useEffect(() => {
+    if (!task?.task_id) return;
 
-      name: file.name,
+    loadAttachments();
+  }, [task?.task_id]);
 
-      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+  const loadAttachments = async () => {
+    try {
+      const data = await getTaskAttachments(task.task_id);
 
-      type: getFileType(file),
-
-      preview:
-        file.type.startsWith("image/") || file.type.startsWith("video/")
-          ? URL.createObjectURL(file)
-          : null,
-    }));
-
-    setPreviewFiles((prev) => [...prev, ...mapped]);
+      setAttachments(data || []);
+    } catch (err) {
+      console.log("LOAD ATTACHMENTS ERROR", err);
+    }
   };
 
-  //
-  // 🔥 REMOVE PREVIEW
-  //
-  const removePreview = (index) => {
-    setPreviewFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleFiles = async (files) => {
+    if (!files?.length) return;
+
+    try {
+      setUploading(true);
+
+      await Promise.all(
+        Array.from(files).map(async (file) => {
+          const uploadData = await generateAttachmentUploadUrl({
+            task_id: task.task_id,
+
+            file_name: file.name,
+
+            file_type: file.type,
+          });
+
+          await uploadAttachment(uploadData.uploadUrl, file);
+
+          return saveAttachment({
+            task_id: task.task_id,
+
+            attachment_id: uploadData.attachment_id,
+
+            file_name: file.name,
+
+            file_size: file.size,
+
+            file_type: file.type,
+
+            file_url: uploadData.fileUrl,
+          });
+        }),
+      );
+
+      await loadAttachments();
+
+      setShowUploader(false);
+    } catch (err) {
+      console.log("UPLOAD ATTACHMENT ERROR", err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (attachmentId) => {
+    await deleteAttachment(task.task_id, attachmentId);
+
+    await loadAttachments();
   };
 
   return (
@@ -202,7 +215,8 @@ export default function TaskAttachments() {
           "
         >
           <Plus size={16} />
-          Add Files
+
+          {uploading ? "Uploading..." : "Add Files"}
           {showUploader ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
       </div>
@@ -276,125 +290,6 @@ export default function TaskAttachments() {
             Upload images, videos, PDF, Word, Excel, PowerPoint and more.
           </p>
         </label>
-
-        {/* PREVIEW FILES */}
-        {previewFiles.length > 0 && (
-          <div
-            className="
-      mt-5
-
-      rounded-[28px]
-
-      border border-indigo-500/20
-
-      bg-indigo-500/[0.04]
-
-      p-5
-    "
-          >
-            {/* HEADER */}
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h4 className="text-sm font-semibold text-white">
-                  Upload Queue
-                </h4>
-
-                <p className="text-xs text-indigo-300/70 mt-1">
-                  Files waiting to upload
-                </p>
-              </div>
-
-              <div className="px-3 py-1 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300">
-                {previewFiles.length} pending
-              </div>
-            </div>
-
-            {/* GRID */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {previewFiles.map((file, index) => {
-                const isMedia = file.type === "image" || file.type === "video";
-
-                return (
-                  <div
-                    key={index}
-                    className="
-                relative overflow-hidden
-
-                rounded-3xl
-
-                border border-indigo-500/20
-
-                bg-[#0f172a]
-              "
-                  >
-                    {/* REMOVE */}
-                    <button
-                      onClick={() => removePreview(index)}
-                      className="
-                  absolute top-3 right-3 z-20
-
-                  w-9 h-9 rounded-2xl
-
-                  bg-black/40
-                  backdrop-blur-xl
-
-                  border border-white/10
-
-                  flex items-center justify-center
-
-                  text-white
-                "
-                    >
-                      <X size={16} />
-                    </button>
-
-                    {isMedia ? (
-                      <div className="relative aspect-video">
-                        <img
-                          src={file.preview}
-                          alt={file.name}
-                          className="w-full h-full object-cover"
-                        />
-
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
-                        <div className="absolute bottom-3 left-3 right-3">
-                          <p className="text-sm font-medium text-white truncate">
-                            {file.name}
-                          </p>
-
-                          <p className="text-[11px] text-gray-300 mt-1">
-                            {file.size}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="aspect-video flex flex-col items-center justify-center gap-3 p-6">
-                        <div
-                          className={`
-                      ${getFileColor(file.type)}
-                    `}
-                        >
-                          {getFileIcon(file.type)}
-                        </div>
-
-                        <div className="text-center">
-                          <p className="text-sm font-medium text-white truncate max-w-[200px]">
-                            {file.name}
-                          </p>
-
-                          <p className="text-[11px] text-gray-500 mt-1">
-                            {file.size}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* SAVED ATTACHMENTS */}
@@ -407,124 +302,201 @@ export default function TaskAttachments() {
           gap-4
         "
       >
-        {attachments.map((file, i) => {
-          const isMedia = file.type === "image" || file.type === "video";
+        {attachments.length === 0 ? (
+          <div
+            className="
+              col-span-full
 
-          return (
-            <div
-              key={i}
+              rounded-3xl
+
+              border
+              border-dashed
+              border-white/10
+
+              bg-white/[0.02]
+
+              p-10
+
+              text-center
+            "
+          >
+            <UploadCloud
+              size={32}
               className="
-                  group relative overflow-hidden
-                  rounded-3xl border border-white/10
-                  bg-white/[0.03]
-                "
+                mx-auto
+
+                text-gray-500
+
+                mb-3
+              "
+            />
+
+            <p className="text-white font-medium">No Attachments</p>
+
+            <p
+              className="
+                text-sm
+                text-gray-500
+
+                mt-1
+              "
             >
-              {isMedia ? (
-                <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={file.url}
-                    alt={file.name}
-                    className="
-                        w-full h-full object-cover
-                        transition duration-300
-                        group-hover:scale-105
-                      "
-                  />
+              Upload files to this task
+            </p>
+          </div>
+        ) : (
+          attachments.map((file, i) => {
+            const isMedia =
+              file.file_type?.startsWith("image/") ||
+              file.file_type?.startsWith("video/");
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <p className="text-sm font-medium text-white truncate">
-                      {file.name}
-                    </p>
-
-                    <p className="text-[11px] text-gray-300 mt-1">
-                      {file.size}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="aspect-video flex flex-col items-center justify-center gap-3 p-6">
-                  <div
-                    className={`
-                        ${getFileColor(file.type)}
-                      `}
-                  >
-                    {getFileIcon(file.type)}
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-white truncate max-w-[200px]">
-                      {file.name}
-                    </p>
-
-                    <p className="text-[11px] text-gray-500 mt-1">
-                      {file.size}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* FLOATING ACTIONS */}
+            return (
               <div
+                key={file.attachment_id || i}
                 className="
-                    absolute top-3 right-3 z-10
+    group relative overflow-hidden
 
-                    flex items-center gap-2
+    rounded-3xl
 
-                    opacity-0
-                    group-hover:opacity-100
+    border border-white/10
 
-                    transition-all duration-200
-                  "
+    bg-white/[0.03]
+  "
               >
-                {/* VIEW */}
-                <button
+                {isMedia ? (
+                  <div className="relative aspect-video overflow-hidden">
+                    <img
+                      src={file.file_url}
+                      alt={file.file_name}
+                      className="
+          w-full
+          h-full
+          object-cover
+
+          transition
+          duration-300
+
+          group-hover:scale-105
+        "
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <p className="text-sm font-medium text-white truncate">
+                        {file.file_name}
+                      </p>
+
+                      <p className="text-[11px] text-gray-300 mt-1">
+                        {(Number(file.file_size || 0) / 1024 / 1024).toFixed(2)}{" "}
+                        MB
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="aspect-video flex flex-col items-center justify-center gap-3 p-6">
+                    <div
+                      className={getFileColor(
+                        getFileType({
+                          type: file.file_type,
+                          name: file.file_name,
+                        }),
+                      )}
+                    >
+                      {getFileIcon(
+                        getFileType({
+                          type: file.file_type,
+                          name: file.file_name,
+                        }),
+                      )}
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-white truncate max-w-[200px]">
+                        {file.file_name}
+                      </p>
+
+                      <p className="text-[11px] text-gray-500 mt-1">
+                        {(Number(file.file_size || 0) / 1024 / 1024).toFixed(2)}{" "}
+                        MB
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div
                   className="
-                      w-10 h-10 rounded-2xl
+      absolute top-3 right-3 z-10
 
-                      bg-black/40
-                      backdrop-blur-xl
+      flex items-center gap-2
 
-                      border border-white/10
+      opacity-0
+      group-hover:opacity-100
 
-                      hover:bg-black/60
-
-                      transition
-
-                      flex items-center justify-center
-
-                      text-white
-                    "
+      transition-all duration-200
+    "
                 >
-                  <Eye size={16} strokeWidth={2.2} />
-                </button>
+                  <button
+                    className="
+        w-10 h-10 rounded-2xl
 
-                {/* DOWNLOAD */}
-                <button
-                  className="
-                      w-10 h-10 rounded-2xl
+        bg-black/40
+        backdrop-blur-xl
 
-                      bg-black/40
-                      backdrop-blur-xl
+        border border-white/10
 
-                      border border-white/10
+        hover:bg-black/60
 
-                      hover:bg-black/60
+        flex items-center justify-center
 
-                      transition
+        text-white
+      "
+                    onClick={() => window.open(file.file_url, "_blank")}
+                  >
+                    <Eye size={16} />
+                  </button>
 
-                      flex items-center justify-center
+                  <button
+                    className="
+        w-10 h-10 rounded-2xl
 
-                      text-white
-                    "
-                >
-                  <Download size={16} strokeWidth={2.2} />
-                </button>
+        bg-black/40
+        backdrop-blur-xl
+
+        border border-white/10
+
+        hover:bg-black/60
+
+        flex items-center justify-center
+
+        text-white
+      "
+                    onClick={() => window.open(file.file_url, "_blank")}
+                  >
+                    <Download size={16} />
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(file.attachment_id)}
+                    className="
+        w-10 h-10 rounded-2xl
+
+        bg-red-500/80
+
+        hover:bg-red-500
+
+        text-white
+
+        flex items-center justify-center
+      "
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );

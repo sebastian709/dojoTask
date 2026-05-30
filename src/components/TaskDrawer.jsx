@@ -327,8 +327,7 @@ export default function TaskDrawer({ open, onClose, task, workspaceId }) {
 
             <TaskAssignees task={task} workspaceId={workspaceId} />
 
-            {/* ATTACHMENTS */}
-            <TaskAttachments />
+            <TaskAttachments task={task} />
           </div>
         </div>
 

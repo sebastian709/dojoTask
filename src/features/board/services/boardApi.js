@@ -816,3 +816,144 @@ export const uploadTaskCover =
       }
     );
   };
+
+export const getTaskAttachments =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK_ATTACHMENTS",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+export const generateAttachmentUploadUrl =
+  async ({
+    task_id,
+    file_name,
+    file_type,
+  }) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GENERATE_ATTACHMENT_UPLOAD_URL",
+
+          task_id,
+
+          file_name,
+
+          file_type,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+export const saveAttachment =
+  async (payload) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "SAVE_ATTACHMENT",
+
+        ...payload,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };
+export const deleteAttachment =
+  async (
+    task_id,
+    attachment_id
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens?.accessToken?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "DELETE_ATTACHMENT",
+
+        task_id,
+
+        attachment_id,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };
+
+export const uploadAttachment =
+  async (
+    uploadUrl,
+    file
+  ) => {
+
+    await axios.put(
+      uploadUrl,
+      file,
+      {
+        headers: {
+          "Content-Type":
+            file.type,
+        },
+      }
+    );
+  };
