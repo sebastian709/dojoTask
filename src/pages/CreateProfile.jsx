@@ -35,7 +35,7 @@ export default function CreateProfile() {
       navigate("/dashboard", { replace: true });
 
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
 
     setLoading(false);

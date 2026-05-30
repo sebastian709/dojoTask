@@ -50,20 +50,20 @@ export default function TaskCover({
 
         setUploading(true);
 
-        console.log(
-          "UPLOAD START",
-          file.name
-        );
+        // console.log(
+        //   "UPLOAD START",
+        //   file.name
+        // );
 
         const data =
           await generateTaskCoverUploadUrl(
             task.task_id
           );
 
-        console.log(
-          "SIGNED URL",
-          data
-        );
+        // console.log(
+        //   "SIGNED URL",
+        //   data
+        // );
 
         await uploadTaskCover(
           data.uploadUrl,
@@ -80,10 +80,10 @@ export default function TaskCover({
           data.fileUrl
         );
 
-        console.log(
-          "UPLOAD SUCCESS",
-          data.fileUrl
-        );
+        // console.log(
+        //   "UPLOAD SUCCESS",
+        //   data.fileUrl
+        // );
 
         onRefresh?.();
 
@@ -113,9 +113,9 @@ export default function TaskCover({
         // 🔥 instant remove
         setCoverUrl("");
 
-        console.log(
-          "COVER REMOVED"
-        );
+        // console.log(
+        //   "COVER REMOVED"
+        // );
 
         onRefresh?.();
 

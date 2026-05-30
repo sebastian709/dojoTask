@@ -131,7 +131,7 @@ export default function TaskAttachments({ task }) {
 
       setAttachments(data || []);
     } catch (err) {
-      console.log("LOAD ATTACHMENTS ERROR", err);
+      // console.log("LOAD ATTACHMENTS ERROR", err);
     }
   };
 
@@ -173,7 +173,7 @@ export default function TaskAttachments({ task }) {
 
       setShowUploader(false);
     } catch (err) {
-      console.log("UPLOAD ATTACHMENT ERROR", err);
+      // console.log("UPLOAD ATTACHMENT ERROR", err);
     } finally {
       setUploading(false);
     }

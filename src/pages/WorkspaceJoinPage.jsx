@@ -37,7 +37,7 @@ export default function WorkspaceJoinPage() {
 
         setWorkspace(res.data);
       } catch (err) {
-        console.log("FETCH ERROR:", err);
+        // console.log("FETCH ERROR:", err);
 
         if (err?.response?.status === 401) {
           navigate(`/?redirect=/workspace/join/${workspaceId}`);
@@ -71,7 +71,7 @@ export default function WorkspaceJoinPage() {
       toast.success("Joined workspace!");
       navigate(`/workspace/${workspaceId}`);
     } catch (err) {
-      console.log("JOIN ERROR:", err);
+      // console.log("JOIN ERROR:", err);
 
       const message = err?.response?.data?.message;
 

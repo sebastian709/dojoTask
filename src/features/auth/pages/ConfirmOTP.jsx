@@ -28,7 +28,7 @@ export default function ConfirmOTP() {
       );
     } catch (err) {
       alert(err?.message || "Invalid OTP");
-      console.log(err);
+      // console.log(err);
     }
 
     setLoading(false);

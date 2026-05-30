@@ -53,7 +53,7 @@ function App() {
         };
 
         ws.onopen = () => {
-          console.log("WS CONNECTED");
+          // console.log("WS CONNECTED");
         };
 
         ws.onmessage = (event) => {
@@ -66,12 +66,12 @@ function App() {
           try {
             data = JSON.parse(event.data);
           } catch (err) {
-            console.log("INVALID WS JSON", event.data);
+            // console.log("INVALID WS JSON", event.data);
 
             return;
           }
 
-          console.log("WS MESSAGE:", data);
+          // console.log("WS MESSAGE:", data);
 
           //
           // 🔥 PRESENCE UPDATE
@@ -105,14 +105,14 @@ function App() {
         };
 
         ws.onclose = () => {
-          console.log("WS CLOSED");
+          // console.log("WS CLOSED");
         };
 
         ws.onerror = (err) => {
-          console.log("WS ERROR", err);
+          // console.log("WS ERROR", err);
         };
       } catch (err) {
-        console.log("WS INIT ERROR", err);
+        // console.log("WS INIT ERROR", err);
       }
     };
 
@@ -138,7 +138,7 @@ function App() {
       // LOGIN
       //
       if (payload.event === "signedIn") {
-        console.log("SIGNED IN");
+        // console.log("SIGNED IN");
 
         connectWS();
       }
@@ -147,7 +147,7 @@ function App() {
       // LOGOUT
       //
       if (payload.event === "signedOut") {
-        console.log("SIGNED OUT");
+        // console.log("SIGNED OUT");
 
         ws?.close();
       }

@@ -37,7 +37,7 @@ export default function Login() {
         ...profile,
       });
 
-      console.log(res);
+      // console.log(res);
 
       if (profile?.is_no_data === 1) {
         toast.success("Complete your profile first");
@@ -58,7 +58,7 @@ export default function Login() {
 
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       toast.error(err?.message || "Login failed");
     } finally {
       setLoading(false); // 🔥 BEST PRACTICE

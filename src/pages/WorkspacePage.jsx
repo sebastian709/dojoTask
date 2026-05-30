@@ -79,7 +79,7 @@ export default function WorkspacePage() {
 
       toast.success("Board created successfully!");
     } catch (err) {
-      console.log("CREATE BOARD ERROR:", err);
+      // console.log("CREATE BOARD ERROR:", err);
       toast.error("Failed to create board");
     } finally {
       setCreating(false);
@@ -112,7 +112,7 @@ export default function WorkspacePage() {
 
         setBoards(res.data || []);
       } catch (err) {
-        console.log("BOARD FETCH ERROR:", err);
+        // console.log("BOARD FETCH ERROR:", err);
         setBoards([]);
       } finally {
         setLoadingBoards(false);
@@ -153,7 +153,7 @@ export default function WorkspacePage() {
 
         setWorkspace(res.data);
       } catch (err) {
-        console.log("WORKSPACE FETCH ERROR:", err);
+        // console.log("WORKSPACE FETCH ERROR:", err);
         navigate("/dashboard");
       }
     };

@@ -21,6 +21,10 @@ import {
   LayoutDashboard,
   Share2,
   ArrowLeft,
+  Calendar,
+  Paperclip,
+  Flag,
+  Users,
 } from "lucide-react";
 
 import NavBar from "../components/NavBar";
@@ -70,7 +74,7 @@ export default function BoardPage() {
 
         setLists(fullBoard || []);
       } catch (err) {
-        console.log("BOARD LOAD ERROR:", err);
+        // console.log("BOARD LOAD ERROR:", err);
       } finally {
         setLoading(false);
       }
@@ -84,7 +88,7 @@ export default function BoardPage() {
       if (e.detail.board_id !== boardId) {
         return;
       }
-      console.log("BOARD EVENT RECEIVED:", e.detail);
+      // console.log("BOARD EVENT RECEIVED:", e.detail);
       const fullBoard = await getBoardFull(boardId);
 
       setLists(fullBoard || []);
@@ -124,7 +128,7 @@ export default function BoardPage() {
 
       window.broadcastBoard?.(boardId);
     } catch (err) {
-      console.log("ADD LIST ERROR:", err);
+      // console.log("ADD LIST ERROR:", err);
     }
   };
 
@@ -161,7 +165,7 @@ export default function BoardPage() {
       await updateList(boardId, editingList.id, editingList.text);
       window.broadcastBoard?.(boardId);
     } catch (err) {
-      console.log("UPDATE LIST ERROR:", err);
+      // console.log("UPDATE LIST ERROR:", err);
     }
 
     setEditingList({
@@ -205,7 +209,7 @@ export default function BoardPage() {
       });
       window.broadcastBoard?.(boardId);
     } catch (err) {
-      console.log("SAVE TASK ERROR:", err);
+      // console.log("SAVE TASK ERROR:", err);
     }
   };
 
@@ -252,7 +256,7 @@ export default function BoardPage() {
           newTasks.map((task, index) => reorderTask(task.task_id, index)),
         );
       } catch (err) {
-        console.log("REORDER SAVE ERROR:", err);
+        // console.log("REORDER SAVE ERROR:", err);
       }
       return;
     }
@@ -307,7 +311,7 @@ export default function BoardPage() {
       await reorderListTasks(boardId, reorderedTasks);
       window.broadcastBoard?.(boardId);
     } catch (err) {
-      console.log("MOVE TASK ERROR:", err);
+      // console.log("MOVE TASK ERROR:", err);
     }
   };
 
@@ -329,7 +333,7 @@ export default function BoardPage() {
       );
       window.broadcastBoard?.(boardId);
     } catch (err) {
-      console.log("DELETE LIST ERROR:", err);
+      // console.log("DELETE LIST ERROR:", err);
     } finally {
       setLoadingListId(null);
     }
@@ -602,18 +606,213 @@ export default function BoardPage() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                onClick={() => setSelectedTask(task)}
-                                className="p-2 bg-white/10 rounded mb-2 text-sm cursor-grab active:cursor-grabbing"
+                                onClick={() =>
+                                  setSelectedTask({
+                                    ...task,
+                                    list_title: list.title,
+                                  })
+                                }
+                                className="
+                                  overflow-hidden
+
+                                  rounded-2xl
+
+                                  border border-white/10
+
+                                  bg-[#111827]
+
+                                  hover:border-indigo-500/20
+
+                                  hover:bg-[#151f34]
+
+                                  transition-all
+
+                                  cursor-grab
+                                  active:cursor-grabbing
+
+                                  shadow-sm
+                                "
                               >
-                                <div
-                                  className="break-words overflow-hidden m-2"
-                                  style={{
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 3,
-                                    WebkitBoxOrient: "vertical",
-                                  }}
-                                >
-                                  {task.title}
+                                {/* COVER */}
+                                {task.cover_url && (
+                                  <img
+                                    src={task.cover_url}
+                                    alt=""
+                                    className="
+                                      w-full
+                                      h-28
+
+                                      object-cover
+                                    "
+                                  />
+                                )}
+
+                                <div className="p-3">
+                                  {/* TITLE */}
+                                  <h4
+                                    className="
+                                      text-sm
+                                      font-semibold
+                                      text-white
+
+                                      line-clamp-2
+                                    "
+                                  >
+                                    {task.title}
+                                  </h4>
+
+                                  {/* DESCRIPTION */}
+                                  {task.description && (
+                                    <p
+                                      className="
+                                        mt-2
+
+                                        text-xs
+                                        text-gray-400
+
+                                        line-clamp-2
+                                      "
+                                    >
+                                      {task.description}
+                                    </p>
+                                  )}
+
+                                  {/* PROPERTIES */}
+                                  <div
+                                    className="
+                                      flex flex-wrap
+
+                                      gap-1.5
+
+                                      mt-3
+                                    "
+                                  >
+                                    {task.due_date && (
+                                      <div
+                                        className="
+                                          flex items-center gap-1
+
+                                          px-2 py-1
+
+                                          rounded-lg
+
+                                          bg-white/5
+
+                                          text-[10px]
+                                          text-gray-300
+                                        "
+                                      >
+                                        <Calendar size={10} />
+
+                                        {task.due_date}
+                                      </div>
+                                    )}
+
+                                    {task.priority && (
+                                      <div
+                                        className="
+                                          flex items-center gap-1
+
+                                          px-2 py-1
+
+                                          rounded-lg
+
+                                          bg-red-500/10
+
+                                          text-[10px]
+                                          text-red-300
+                                        "
+                                      >
+                                        <Flag size={10} />
+
+                                        {task.priority}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* FOOTER */}
+                                  <div
+                                    className="
+                                      flex items-center
+                                      justify-between
+
+                                      mt-3
+                                    "
+                                  >
+                                    {/* ATTACHMENTS */}
+                                    {task.attachment_count > 0 && (
+                                      <div
+                                        className="
+                                          flex items-center gap-1
+
+                                          text-xs
+                                          text-gray-400
+                                        "
+                                      >
+                                        <Paperclip size={13} />
+
+                                        {task.attachment_count}
+                                      </div>
+                                    )}
+
+                                    {/* ASSIGNEES */}
+                                    <div className="flex -space-x-2">
+                                      {(task.assignees || [])
+                                        .slice(0, 3)
+                                        .map((user) => (
+                                          <div
+                                            key={user.user_id}
+                                            className="
+                                              w-7 h-7
+
+                                              rounded-full
+
+                                              border-2
+                                              border-[#111827]
+
+                                              bg-indigo-500
+
+                                              text-[10px]
+                                              font-semibold
+
+                                              flex items-center
+                                              justify-center
+
+                                              text-white
+                                            "
+                                          >
+                                            {user.firstname?.[0]}
+                                            {user.lastname?.[0]}
+                                          </div>
+                                        ))}
+
+                                      {(task.assignees || []).length > 3 && (
+                                        <div
+                                          className="
+                                            w-7 h-7
+
+                                            rounded-full
+
+                                            border-2
+                                            border-[#111827]
+
+                                            bg-white/10
+
+                                            backdrop-blur
+
+                                            text-[10px]
+
+                                            flex items-center
+                                            justify-center
+
+                                            text-white
+                                          "
+                                        >
+                                          +{(task.assignees || []).length - 3}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             )}

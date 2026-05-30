@@ -80,7 +80,7 @@ const NavBar = () => {
 
       setShowModal(false);
     } catch (err) {
-      console.log(err);
+      // console.log(err);
 
       toast.error("Failed to create workspace");
     }

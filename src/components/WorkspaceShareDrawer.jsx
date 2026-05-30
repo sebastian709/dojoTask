@@ -89,7 +89,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast.error("Copy failed");
-      console.log(err);
+      // console.log(err);
     }
   };
 

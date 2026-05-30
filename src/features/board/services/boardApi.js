@@ -26,7 +26,7 @@ export const getBoard = async (boardId, workspaceId) => {
 
     return res.data;
   } catch (err) {
-    console.log("BOARD FETCH ERROR:", err);
+    // console.log("BOARD FETCH ERROR:", err);
   }
 };
 
@@ -59,10 +59,10 @@ export const createList = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "CREATE LIST ERROR:",
-      err
-    );
+    // console.log(
+    //   "CREATE LIST ERROR:",
+    //   err
+    // );
   }
 };
 
@@ -95,10 +95,10 @@ export const createTask = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "CREATE TASK ERROR:",
-      err
-    );
+    // console.log(
+    //   "CREATE TASK ERROR:",
+    //   err
+    // );
   }
 };
 
@@ -129,10 +129,10 @@ export const getBoardFull = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "GET FULL BOARD ERROR:",
-      err
-    );
+    // console.log(
+    //   "GET FULL BOARD ERROR:",
+    //   err
+    // );
   }
 };
 
@@ -166,10 +166,10 @@ export const moveTask = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "MOVE TASK ERROR:",
-      err
-    );
+    // console.log(
+    //   "MOVE TASK ERROR:",
+    //   err
+    // );
   }
 };
 
@@ -207,10 +207,10 @@ export const updateList = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "UPDATE LIST ERROR:",
-      err
-    );
+    // console.log(
+    //   "UPDATE LIST ERROR:",
+    //   err
+    // );
   }
 };
 
@@ -243,10 +243,10 @@ export const deleteList = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "DELETE LIST ERROR:",
-      err
-    );
+    // console.log(
+    //   "DELETE LIST ERROR:",
+    //   err
+    // );
 
     throw err;
   }
@@ -283,10 +283,10 @@ export const reorderTask = async (
 
     return res.data;
   } catch (err) {
-    console.log(
-      "REORDER TASK ERROR:",
-      err
-    );
+    // console.log(
+    //   "REORDER TASK ERROR:",
+    //   err
+    // );
   }
 };
 
@@ -319,10 +319,10 @@ export const reorderListTasks =
 
       return res.data;
     } catch (err) {
-      console.log(
-        "REORDER TASKS ERROR:",
-        err
-      );
+      // console.log(
+      //   "REORDER TASKS ERROR:",
+      //   err
+      // );
     }
   };
 
@@ -494,10 +494,10 @@ export const updateTaskDetails =
 
     } catch (err) {
 
-      console.log(
-        "UPDATE TASK ERROR:",
-        err
-      );
+      // console.log(
+      //   "UPDATE TASK ERROR:",
+      //   err
+      // );
     }
   };
 

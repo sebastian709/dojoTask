@@ -14,7 +14,7 @@ export default function Dashboard() {
         const data = await getWorkspaces();
         setWorkspaces(data);
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       } finally {
         setLoading(false);
       }

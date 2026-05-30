@@ -61,7 +61,7 @@ export default function TaskDrawer({ open, onClose, task, workspaceId }) {
 
         window.broadcastBoard?.(task.board_id);
       } catch (err) {
-        console.log("AUTOSAVE ERROR", err);
+        // console.log("AUTOSAVE ERROR", err);
       }
     }, 800);
 
@@ -203,83 +203,101 @@ export default function TaskDrawer({ open, onClose, task, workspaceId }) {
             <div>
               <div
                 className="
-                  flex items-start gap-4
-                "
+      flex items-start gap-4
+    "
               >
                 {/* ICON */}
                 <div
                   className="
-                    w-12 h-12
+        w-12 h-12
 
-                    rounded-2xl
+        rounded-2xl
 
-                    border border-indigo-500/20
+        border border-indigo-500/20
 
-                    bg-indigo-500/10
+        bg-gradient-to-br
+        from-indigo-500/20
+        to-indigo-500/5
 
-                    flex items-center justify-center
+        flex items-center justify-center
 
-                    flex-shrink-0
-                  "
+        flex-shrink-0
+      "
                 >
                   <AlignLeft
                     size={18}
                     className="
-                      text-indigo-300
-                    "
+          text-indigo-300
+        "
                   />
                 </div>
 
                 {/* CONTENT */}
-                <div className="flex-1">
-                  <div
-                    className="
-                      flex items-center gap-2
-                      mb-2
-                    "
-                  >
-                    <span
+                <div className="flex-1 min-w-0">
+                  {/* LIST TITLE */}
+                  <div className="mb-3">
+                    <div
                       className="
-                        px-2 py-1
+            inline-flex
 
-                        rounded-xl
+            items-center
 
-                        bg-indigo-500/10
+            px-4 py-2
 
-                        border border-indigo-500/20
+            rounded-2xl
 
-                        text-[11px]
+            bg-gradient-to-r
+            from-indigo-500/15
+            to-violet-500/15
 
-                        text-indigo-300
-                      "
+            border
+            border-indigo-500/20
+
+            backdrop-blur-sm
+          "
                     >
-                      Development
-                    </span>
+                      <span
+                        className="
+              text-sm
+
+              font-bold
+
+              uppercase
+
+              tracking-wider
+
+              text-indigo-200
+            "
+                      >
+                        {task?.list_title || "Unknown"}
+                      </span>
+                    </div>
                   </div>
 
+                  {/* TITLE */}
                   <textarea
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     rows={2}
                     className="
-                    w-full
+          w-full
 
-                    bg-transparent
+          bg-transparent
 
-                    resize-none
+          resize-none
 
-                    outline-none
+          outline-none
 
-                    text-3xl
+          text-3xl
 
-                    font-bold
+          font-bold
 
-                    tracking-tight
+          tracking-tight
 
-                    text-white
+          text-white
 
-                    leading-tight
-                  "
+          leading-tight
+        "
                   />
                 </div>
               </div>
