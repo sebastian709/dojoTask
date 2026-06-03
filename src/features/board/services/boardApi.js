@@ -957,3 +957,63 @@ export const uploadAttachment =
       }
     );
   };
+
+export const getTaskComments =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens
+        ?.accessToken
+        ?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK_COMMENTS",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data;
+  };
+
+export const addTaskComment =
+  async (payload) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens
+        ?.accessToken
+        ?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "ADD_TASK_COMMENT",
+
+        ...payload,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };

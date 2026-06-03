@@ -453,43 +453,10 @@ export default function TaskDrawer({ open, onClose, task, workspaceId }) {
 
           {/* CONTENT */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-            {activeTab === "comments" && <TaskComments />}
+            {activeTab === "comments" && <TaskComments task={task} />}
 
             {activeTab === "activity" && <TaskActivity />}
           </div>
-
-          {/* INPUT */}
-          {activeTab === "comments" && (
-            <div className="border-t border-white/10 p-4 sm:p-5">
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-3">
-                <textarea
-                  placeholder="Write a comment..."
-                  className="
-                    w-full resize-none bg-transparent
-                    outline-none text-sm text-white
-                    placeholder:text-gray-500
-
-                    min-h-[60px]
-                    sm:min-h-[90px]
-                  "
-                />
-
-                <div className="flex justify-end mt-3">
-                  <button
-                    className="
-                      px-4 py-2 rounded-2xl
-                      bg-indigo-500
-                      hover:bg-indigo-400
-                      transition
-                      text-sm font-medium text-white
-                    "
-                  >
-                    Send
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
