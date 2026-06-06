@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import {
   getTaskDetails,
   updateTaskProperties,
+  logTaskActivity,
 } from "../../features/board/services/boardApi";
 
 export default function TaskProperties({ task }) {
@@ -41,6 +42,12 @@ export default function TaskProperties({ task }) {
   ) => {
     if (!task?.task_id) return;
 
+    const previousDueDate = dueDate;
+
+    const previousPriority = priority;
+
+    const previousLabels = labels;
+
     await updateTaskProperties({
       task_id: task.task_id,
 
@@ -51,7 +58,54 @@ export default function TaskProperties({ task }) {
       labels: nextLabels,
     });
 
+    // DUE DATE
+    if (previousDueDate !== nextDueDate) {
+      await logTaskActivity(
+        task.task_id,
+
+        nextDueDate ? `Changed due date to ${nextDueDate}` : "Removed due date",
+      );
+    }
+
+    // PRIORITY
+    if (previousPriority !== nextPriority) {
+      await logTaskActivity(
+        task.task_id,
+
+        nextPriority
+          ? `Changed priority to ${nextPriority}`
+          : "Removed priority",
+      );
+    }
+
+    // LABELS ADDED
+    const addedLabels = nextLabels.filter(
+      (label) => !previousLabels.includes(label),
+    );
+
+    for (const label of addedLabels) {
+      await logTaskActivity(
+        task.task_id,
+
+        `Added label "${label}"`,
+      );
+    }
+
+    // LABELS REMOVED
+    const removedLabels = previousLabels.filter(
+      (label) => !nextLabels.includes(label),
+    );
+
+    for (const label of removedLabels) {
+      await logTaskActivity(
+        task.task_id,
+
+        `Removed label "${label}"`,
+      );
+    }
+
     await loadTask();
+
     window.broadcastBoard?.(task.board_id);
   };
 
@@ -247,6 +301,8 @@ export default function TaskProperties({ task }) {
                 <div
                   key={label}
                   className="
+                    flex items-center gap-1
+
                     px-2 py-1
 
                     rounded-lg
@@ -259,9 +315,20 @@ export default function TaskProperties({ task }) {
 
                     text-xs
                     font-medium
-                    "
+                  "
                 >
-                  {label}
+                  <span>{label}</span>
+
+                  <button
+                    onClick={() => removeLabel(label)}
+                    className="
+                      hover:text-red-300
+
+                      transition
+                    "
+                  >
+                    <X size={12} />
+                  </button>
                 </div>
               ))
             )}

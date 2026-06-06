@@ -254,8 +254,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
                               : `${m.firstname} ${m.lastname}`}
                           </p>
 
-                          <div className="flex items-center gap-2 mt-0.5">
-                            {/* online dot */}
+                          {/* <div className="flex items-center gap-2 mt-0.5">
                             <div
                               className={`w-2 h-2 rounded-full ${
                                 m.status === "online"
@@ -269,7 +268,7 @@ const WorkspaceShareDrawer = ({ open, onClose, workspace }) => {
                                 ? "Online"
                                 : formatLastSeen(m.last_seen)}
                             </p>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
 

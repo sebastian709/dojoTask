@@ -1,137 +1,95 @@
-import {
-  ImagePlus,
-  Trash2,
-  Loader2,
-} from "lucide-react";
+import { ImagePlus, Trash2, Loader2 } from "lucide-react";
 
-import {
-  useState,
-  useEffect,
-} from "react";
+import { useState, useEffect } from "react";
 
 import {
   generateTaskCoverUploadUrl,
   saveTaskCover,
   removeTaskCover,
   uploadTaskCover,
+  logTaskActivity
 } from "../../features/board/services/boardApi";
 
-export default function TaskCover({
-  task,
-  onRefresh,
-}) {
+export default function TaskCover({ task, onRefresh }) {
+  const [coverUrl, setCoverUrl] = useState(task?.cover_url || "");
 
-  const [coverUrl, setCoverUrl] =
-    useState(
-      task?.cover_url || ""
-    );
-
-  const [uploading, setUploading] =
-    useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-
-    setCoverUrl(
-      task?.cover_url || ""
-    );
-
+    setCoverUrl(task?.cover_url || "");
   }, [task?.cover_url]);
 
-  const handleUpload =
-    async (e) => {
+  const handleUpload = async (e) => {
+    const file = e.target.files?.[0];
 
-      const file =
-        e.target.files?.[0];
+    if (!file) return;
 
-      if (!file)
-        return;
+    try {
+      setUploading(true);
 
-      try {
+      // console.log(
+      //   "UPLOAD START",
+      //   file.name
+      // );
 
-        setUploading(true);
+      const data = await generateTaskCoverUploadUrl(task.task_id);
 
-        // console.log(
-        //   "UPLOAD START",
-        //   file.name
-        // );
+      // console.log(
+      //   "SIGNED URL",
+      //   data
+      // );
 
-        const data =
-          await generateTaskCoverUploadUrl(
-            task.task_id
-          );
+      await uploadTaskCover(data.uploadUrl, file);
 
-        // console.log(
-        //   "SIGNED URL",
-        //   data
-        // );
+      await saveTaskCover(task.task_id, data.fileUrl);
 
-        await uploadTaskCover(
-          data.uploadUrl,
-          file
-        );
+      await logTaskActivity(
+        task.task_id,
 
-        await saveTaskCover(
-          task.task_id,
-          data.fileUrl
-        );
+        `Updated cover image`,
+      );
 
-        // 🔥 instant update
-        setCoverUrl(
-          data.fileUrl
-        );
+      // 🔥 instant update
+      setCoverUrl(data.fileUrl);
 
-        // console.log(
-        //   "UPLOAD SUCCESS",
-        //   data.fileUrl
-        // );
+      // console.log(
+      //   "UPLOAD SUCCESS",
+      //   data.fileUrl
+      // );
 
-        onRefresh?.();
+      onRefresh?.();
+    } catch (err) {
+      console.error("UPLOAD COVER ERROR", err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
-      } catch (err) {
+  const handleRemove = async () => {
+    try {
+      await removeTaskCover(task.task_id);
 
-        console.error(
-          "UPLOAD COVER ERROR",
-          err
-        );
+      await logTaskActivity(
+        task.task_id,
 
-      } finally {
+        "Removed cover image",
+      );
 
-        setUploading(false);
+      // 🔥 instant remove
+      setCoverUrl("");
 
-      }
-    };
+      // console.log(
+      //   "COVER REMOVED"
+      // );
 
-  const handleRemove =
-    async () => {
-
-      try {
-
-        await removeTaskCover(
-          task.task_id
-        );
-
-        // 🔥 instant remove
-        setCoverUrl("");
-
-        // console.log(
-        //   "COVER REMOVED"
-        // );
-
-        onRefresh?.();
-
-      } catch (err) {
-
-        console.error(
-          "REMOVE COVER ERROR",
-          err
-        );
-      }
-    };
+      onRefresh?.();
+    } catch (err) {
+      console.error("REMOVE COVER ERROR", err);
+    }
+  };
 
   if (!coverUrl) {
-
     return (
-
       <div
         className="
           rounded-3xl
@@ -147,7 +105,6 @@ export default function TaskCover({
           text-center
         "
       >
-
         <ImagePlus
           size={34}
           className="
@@ -206,7 +163,6 @@ export default function TaskCover({
             transition
           "
         >
-
           {uploading ? (
             <Loader2
               size={16}
@@ -215,34 +171,18 @@ export default function TaskCover({
               "
             />
           ) : (
-            <ImagePlus
-              size={16}
-            />
+            <ImagePlus size={16} />
           )}
 
-          <span>
-            {uploading
-              ? "Uploading..."
-              : "Add Cover"}
-          </span>
+          <span>{uploading ? "Uploading..." : "Add Cover"}</span>
 
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={
-              handleUpload
-            }
-          />
-
+          <input type="file" accept="image/*" hidden onChange={handleUpload} />
         </label>
-
       </div>
     );
   }
 
   return (
-
     <div
       className="
         relative
@@ -255,7 +195,6 @@ export default function TaskCover({
         border-white/10
       "
     >
-
       <img
         src={coverUrl}
         alt="cover"
@@ -291,7 +230,6 @@ export default function TaskCover({
           flex gap-2
         "
       >
-
         <label
           className="
             cursor-pointer
@@ -313,26 +251,13 @@ export default function TaskCover({
             transition
           "
         >
+          {uploading ? "Uploading..." : "Change Cover"}
 
-          {uploading
-            ? "Uploading..."
-            : "Change"}
-
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={
-              handleUpload
-            }
-          />
-
+          <input type="file" accept="image/*" hidden onChange={handleUpload} />
         </label>
 
         <button
-          onClick={
-            handleRemove
-          }
+          onClick={handleRemove}
           className="
             px-3 py-2
 
@@ -342,20 +267,16 @@ export default function TaskCover({
 
             hover:bg-red-500
 
+            text-xs
+
             text-white
 
             transition
           "
         >
-
-          <Trash2
-            size={14}
-          />
-
+          Remove Cover
         </button>
-
       </div>
-
     </div>
   );
 }

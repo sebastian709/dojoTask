@@ -23,6 +23,7 @@ import {
   saveAttachment,
   uploadAttachment,
   deleteAttachment,
+  logTaskActivity
 } from "../../features/board/services/boardApi";
 
 export default function TaskAttachments({ task }) {
@@ -153,7 +154,7 @@ export default function TaskAttachments({ task }) {
 
           await uploadAttachment(uploadData.uploadUrl, file);
 
-          return saveAttachment({
+          await saveAttachment({
             task_id: task.task_id,
 
             attachment_id: uploadData.attachment_id,
@@ -166,6 +167,12 @@ export default function TaskAttachments({ task }) {
 
             file_url: uploadData.fileUrl,
           });
+
+          await logTaskActivity(
+            task.task_id,
+
+            `Uploaded attachment "${file.name}"`,
+          );
         }),
       );
 
@@ -180,7 +187,17 @@ export default function TaskAttachments({ task }) {
   };
 
   const handleDelete = async (attachmentId) => {
+    const attachment = attachments.find(
+      (x) => x.attachment_id === attachmentId,
+    );
+
     await deleteAttachment(task.task_id, attachmentId);
+
+    await logTaskActivity(
+      task.task_id,
+
+      `Deleted attachment "${attachment?.file_name || "Unknown File"}"`,
+    );
 
     await loadAttachments();
   };

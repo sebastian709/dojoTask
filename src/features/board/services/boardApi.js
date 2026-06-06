@@ -1017,3 +1017,118 @@ export const addTaskComment =
       }
     );
   };
+
+export const addTaskActivity =
+  async ({
+    task_id,
+    message,
+  }) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens
+        ?.accessToken
+        ?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "ADD_TASK_ACTIVITY",
+
+        task_id,
+
+        message,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };
+
+export const getTaskActivity =
+  async (taskId) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens
+        ?.accessToken
+        ?.toString();
+
+    const res =
+      await axios.post(
+        `${API_BASE}/board/crud`,
+        {
+          action:
+            "GET_TASK_ACTIVITY",
+
+          task_id:
+            taskId,
+        },
+        {
+          headers: {
+            Authorization:
+              token,
+          },
+        }
+      );
+
+    return res.data;
+  };
+export const logTaskActivity =
+  async (
+    task_id,
+    message
+  ) => {
+
+    try {
+
+      await addTaskActivity({
+        task_id,
+        message,
+      });
+
+    } catch (err) {
+
+      console.log(
+        "ACTIVITY ERROR",
+        err
+      );
+    }
+  };
+export const archiveTask =
+  async (
+    task_id
+  ) => {
+
+    const session =
+      await fetchAuthSession();
+
+    const token =
+      session.tokens
+        ?.accessToken
+        ?.toString();
+
+    await axios.post(
+      `${API_BASE}/board/crud`,
+      {
+        action:
+          "ARCHIVE_TASK",
+
+        task_id,
+      },
+      {
+        headers: {
+          Authorization:
+            token,
+        },
+      }
+    );
+  };

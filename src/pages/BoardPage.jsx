@@ -11,6 +11,7 @@ import {
   deleteList,
   reorderTask,
   reorderListTasks,
+  logTaskActivity,
 } from "../features/board/services/boardApi";
 import WorkspaceShareDrawer from "../components/WorkspaceShareDrawer";
 
@@ -192,6 +193,12 @@ export default function BoardPage() {
     try {
       const newTask = await createTask(addingTask.listId, addingTask.text);
 
+      await logTaskActivity(
+        newTask.task_id,
+
+        `Created task "${newTask.title}"`,
+      );
+
       setLists((prev) =>
         prev.map((list) =>
           list.list_id === addingTask.listId
@@ -231,6 +238,10 @@ export default function BoardPage() {
     if (!sourceList || !destList) return;
 
     const dragged = sourceList.tasks[source.index];
+
+    const sourceListTitle = sourceList.title;
+
+    const destListTitle = destList.title;
 
     // ================= SAME LIST =================
     if (source.droppableId === destination.droppableId) {
@@ -309,6 +320,11 @@ export default function BoardPage() {
     // save to DB
     try {
       await reorderListTasks(boardId, reorderedTasks);
+      await logTaskActivity(
+        dragged.task_id,
+
+        `Moved task from "${sourceListTitle}" to "${destListTitle}"`,
+      );
       window.broadcastBoard?.(boardId);
     } catch (err) {
       // console.log("MOVE TASK ERROR:", err);

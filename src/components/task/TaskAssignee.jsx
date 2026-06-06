@@ -6,6 +6,7 @@ import {
   getWorkspaceMembers,
   addTaskAssignee,
   removeTaskAssignee,
+  logTaskActivity,
 } from "../../features/board/services/boardApi";
 
 export default function TaskAssignees({ task, workspaceId }) {
@@ -16,6 +17,8 @@ export default function TaskAssignees({ task, workspaceId }) {
   const [openPicker, setOpenPicker] = useState(false);
 
   const [search, setSearch] = useState("");
+
+  
 
   useEffect(() => {
     if (!task?.task_id) return;
@@ -42,7 +45,15 @@ export default function TaskAssignees({ task, workspaceId }) {
   };
 
   const handleAdd = async (userId) => {
+    const user = members.find((x) => x.user_id === userId);
+
     await addTaskAssignee(task.task_id, userId);
+
+    await logTaskActivity(
+      task.task_id,
+
+      `Assigned "${`${user?.firstname || ""} ${user?.lastname || ""}`.trim()}"`,
+    );
 
     await loadAssignees();
 
@@ -52,7 +63,15 @@ export default function TaskAssignees({ task, workspaceId }) {
   };
 
   const handleRemove = async (userId) => {
+    const assignee = assignees.find((x) => x.user_id === userId);
+
     await removeTaskAssignee(task.task_id, userId);
+
+    await logTaskActivity(
+      task.task_id,
+
+      `Removed "${`${assignee?.firstname || ""} ${assignee?.lastname || ""}`.trim()}"`,
+    );
 
     await loadAssignees();
 
