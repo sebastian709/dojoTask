@@ -561,52 +561,6 @@ export default function Profile() {
                   placeholder="Address"
                   className="input"
                 />
-              </div>
-            </div>
-
-            {/* PROFESSIONAL */}
-
-            <div
-              className="
-                    rounded-3xl
-
-                    border border-white/10
-
-                    bg-white/[0.03]
-
-                    p-6
-                "
-            >
-              <h3
-                className="
-                text-white
-                font-semibold
-                mb-4
-                "
-              >
-                Professional Information
-              </h3>
-
-              <div
-                className="
-                grid
-                md:grid-cols-2
-                gap-4
-                "
-              >
-                <input
-                  value={profile.job_title}
-                  onChange={(e) => updateField("job_title", e.target.value)}
-                  placeholder="Job Title"
-                  className="input"
-                />
-
-                <input
-                  value={profile.company}
-                  onChange={(e) => updateField("company", e.target.value)}
-                  placeholder="Company"
-                  className="input"
-                />
 
                 <Select
                   options={TIMEZONES}
@@ -666,6 +620,52 @@ export default function Profile() {
                       maxHeight: 250,
                     }),
                   }}
+                />
+              </div>
+            </div>
+
+            {/* PROFESSIONAL */}
+
+            <div
+              className="
+                    rounded-3xl
+
+                    border border-white/10
+
+                    bg-white/[0.03]
+
+                    p-6
+                "
+            >
+              <h3
+                className="
+                text-white
+                font-semibold
+                mb-4
+                "
+              >
+                Professional Information
+              </h3>
+
+              <div
+                className="
+                grid
+                md:grid-cols-2
+                gap-4
+                "
+              >
+                <input
+                  value={profile.job_title}
+                  onChange={(e) => updateField("job_title", e.target.value)}
+                  placeholder="Job Title"
+                  className="input"
+                />
+
+                <input
+                  value={profile.company}
+                  onChange={(e) => updateField("company", e.target.value)}
+                  placeholder="Company"
+                  className="input"
                 />
               </div>
             </div>
