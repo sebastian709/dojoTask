@@ -7,6 +7,8 @@ import {
   archiveTask as archiveTaskApi,
 } from "../features/board/services/boardApi";
 
+import Swal from "sweetalert2";
+
 import TaskAttachments from "./task/TaskAttachments";
 
 import TaskComments from "./task/TaskComments";

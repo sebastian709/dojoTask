@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { useAuthStore } from "../features/auth/store";
 
@@ -16,6 +16,8 @@ import toast from "react-hot-toast";
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -88,21 +90,35 @@ const NavBar = () => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <header
         className="
-    sticky top-0 z-50
+          sticky top-0 z-50
 
-    border-b border-white/10
+          border-b border-white/10
 
-    bg-[#0f172a]/80
-    backdrop-blur-xl
+          bg-[#0f172a]/80
+          backdrop-blur-xl
 
-    px-4 sm:px-6
+          px-4 sm:px-6
 
-    py-3
-  "
+          py-3
+        "
       >
         {/* MOBILE LAYOUT */}
         <div className="flex flex-col gap-4 lg:hidden">
@@ -111,9 +127,9 @@ const NavBar = () => {
             {/* LOGO */}
             <div
               className="
-          flex items-center gap-2
-          cursor-pointer min-w-0
-        "
+                flex items-center gap-2
+                cursor-pointer min-w-0
+              "
               onClick={() => navigate(`/dashboard`)}
             >
               <img
@@ -124,49 +140,66 @@ const NavBar = () => {
 
               <span
                 className="
-            text-lg font-bold
-            text-white truncate
-          "
+                  text-lg font-bold
+                  text-white truncate
+                "
               >
                 Dojo Task
               </span>
             </div>
 
             {/* USER */}
-            <div className="flex items-center gap-3 relative">
+            <div
+              ref={dropdownRef}
+              className="
+                flex items-center gap-3 relative
+              "
+            >
               <div
                 onClick={() => setOpen(!open)}
                 className="
-            w-10 h-10 rounded-2xl
-            bg-indigo-500
-            flex items-center justify-center
-            text-white cursor-pointer
-            flex-shrink-0
-          "
+                  w-10 h-10 rounded-2xl
+                  bg-indigo-500
+                  flex items-center justify-center
+                  text-white cursor-pointer
+                  flex-shrink-0
+                "
               >
-                {(user?.firstname || user?.username || "U")
-                  .charAt(0)
-                  .toUpperCase()}
+                {user?.image_url ? (
+                  <img
+                    src={user.image_url}
+                    alt=""
+                    className="
+                      w-full
+                      h-full
+                      object-cover
+                    "
+                  />
+                ) : (
+                  (user?.firstname || user?.username || "U")
+                    .charAt(0)
+                    .toUpperCase()
+                )}
               </div>
 
               {/* DROPDOWN */}
               {open && (
                 <div
                   className="
-              absolute right-0 top-full mt-3
+                    absolute right-0 top-full mt-3
 
-              w-56
+                    w-56
 
-              rounded-3xl
+                    rounded-3xl
 
-              border border-white/10
+                    border border-white/10
 
-              bg-[#111827]
+                    bg-[#111827]
 
-              overflow-hidden
+                    overflow-hidden
 
-              shadow-2xl
-            "
+                    shadow-2xl
+                  "
                 >
                   <div className="px-4 py-4 border-b border-white/10">
                     <p className="text-white font-semibold">
@@ -181,11 +214,11 @@ const NavBar = () => {
                   <button
                     onClick={() => navigate("/profile")}
                     className="
-                w-full text-left
-                px-4 py-3
-                text-white
-                hover:bg-white/10
-              "
+                      w-full text-left
+                      px-4 py-3
+                      text-white
+                      hover:bg-white/10
+                    "
                   >
                     Profile
                   </button>
@@ -193,11 +226,11 @@ const NavBar = () => {
                   <button
                     onClick={() => navigate("/settings")}
                     className="
-                w-full text-left
-                px-4 py-3
-                text-white
-                hover:bg-white/10
-              "
+                      w-full text-left
+                      px-4 py-3
+                      text-white
+                      hover:bg-white/10
+                    "
                   >
                     Settings
                   </button>
@@ -205,11 +238,11 @@ const NavBar = () => {
                   <button
                     onClick={handleLogout}
                     className="
-                w-full text-left
-                px-4 py-3
-                text-red-400
-                hover:bg-red-500/10
-              "
+                      w-full text-left
+                      px-4 py-3
+                      text-red-400
+                      hover:bg-red-500/10
+                    "
                   >
                     Logout
                   </button>
@@ -219,56 +252,54 @@ const NavBar = () => {
           </div>
 
           {/* SEARCH */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <input
               placeholder="Search workspace..."
               className="
-          flex-1
-          px-4 py-3
-          rounded-2xl
-          bg-white/[0.05]
-          border border-white/10
-          text-white text-sm
-          outline-none
-          placeholder:text-gray-500
-        "
+                flex-1
+                px-4 py-3
+                rounded-2xl
+                bg-white/[0.05]
+                border border-white/10
+                text-white text-sm
+                outline-none
+                placeholder:text-gray-500
+              "
             />
 
             <button
               onClick={() => setShowModal(true)}
               className="
-          px-5 py-3
-          rounded-2xl
-          bg-indigo-500
-          text-white text-sm font-medium
-          whitespace-nowrap
-        "
+                px-5 py-3
+                rounded-2xl
+                bg-indigo-500
+                text-white text-sm font-medium
+                whitespace-nowrap
+              "
             >
               Create
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* DESKTOP LAYOUT */}
         <div
           className="
-      hidden lg:grid
+            hidden lg:flex
 
-      grid-cols-[1fr_auto_1fr]
+            items-center
 
-      items-center
-
-      gap-6
-    "
+            justify-between
+          "
         >
           {/* LEFT */}
           <div className="flex items-center">
             {/* LOGO */}
             <div
               className="
-          flex items-center gap-2
-          cursor-pointer
-        "
+                flex items-center gap-2
+                cursor-pointer
+              "
               onClick={() => navigate(`/dashboard`)}
             >
               <img
@@ -282,7 +313,7 @@ const NavBar = () => {
           </div>
 
           {/* CENTER */}
-          <div className="flex items-center gap-3 w-[520px]">
+          {/* <div className="flex items-center gap-3 w-[520px]">
             <input
               placeholder="Search workspace..."
               className="
@@ -309,48 +340,66 @@ const NavBar = () => {
             >
               Create
             </button>
-          </div>
+          </div> */}
 
           {/* RIGHT */}
           <div className="flex justify-end">
             {/* USER */}
-            <div className="flex items-center gap-3 relative">
+            <div
+              ref={dropdownRef}
+              className="
+                flex items-center gap-3 relative
+              "
+            >
               <span className="text-sm text-gray-300">
-                {user?.firstname || user?.username || "User"}
+                {(user?.firstname + " " + user?.lastname )|| user?.username || "User"}
               </span>
 
               <div
                 onClick={() => setOpen(!open)}
                 className="
-            w-10 h-10 rounded-2xl
-            bg-indigo-500
-            flex items-center justify-center
-            text-white cursor-pointer
-          "
+                  w-10 h-10 rounded-2xl
+                  bg-indigo-500
+                  flex items-center justify-center
+                  text-white cursor-pointer
+                "
               >
-                {(user?.firstname || user?.username || "U")
-                  .charAt(0)
-                  .toUpperCase()}
+                {user?.image_url ? (
+                  <img
+                    src={user.image_url}
+                    alt=""
+                    className="
+                      rounded-2xl
+                      w-full
+                      h-full
+                      object-cover
+                    "
+                  />
+                ) : (
+                  (user?.firstname || user?.username || "U")
+                    .charAt(0)
+                    .toUpperCase()
+                )}
               </div>
 
               {/* DROPDOWN */}
               {open && (
                 <div
                   className="
-              absolute right-0 top-full mt-3
+                    absolute right-0 top-full mt-3
 
-              w-56
+                    w-56
 
-              rounded-3xl
+                    rounded-3xl
 
-              border border-white/10
+                    border border-white/10
 
-              bg-[#111827]
+                    bg-[#111827]
 
-              overflow-hidden
+                    overflow-hidden
 
-              shadow-2xl
-            "
+                    shadow-2xl
+                  "
                 >
                   <div className="px-4 py-4 border-b border-white/10">
                     <p className="text-white font-semibold">

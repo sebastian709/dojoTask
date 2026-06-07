@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import WorkspaceJoinPage from "../pages/WorkspaceJoinPage";
 import PublicRoute from "../components/PublicRoute";
 import BoardPage from "../pages/BoardPage";
+import Profile from "../pages/Profile";
 
 export default function AppRoutes() {
   return (
@@ -70,6 +71,15 @@ export default function AppRoutes() {
             element={
               <ProtectedRoute>
                 <BoardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

@@ -13,6 +13,14 @@ export const useAuthStore = create(
           isAuthenticated: true,
         }),
 
+      updateUser: (updates) =>
+        set((state) => ({
+          user: {
+            ...state.user,
+            ...updates,
+          },
+        })),
+
       logout: () =>
         set({
           user: null,
@@ -21,7 +29,9 @@ export const useAuthStore = create(
     }),
     {
       name: "auth-storage",
+
       version: 1,
+
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
