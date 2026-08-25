@@ -10,6 +10,8 @@ import AppRoutes from "./app/routes";
 
 import { Hub } from "aws-amplify/utils";
 
+import { Analytics } from "@vercel/analytics/react";
+
 function App() {
   useEffect(() => {
     let ws;
@@ -162,7 +164,12 @@ function App() {
     };
   }, []);
 
-  return <AppRoutes />;
+  return (
+    <>
+      <AppRoutes />
+      <Analytics />
+    </>
+  );
 }
 
 export default App;
