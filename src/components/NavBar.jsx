@@ -313,7 +313,7 @@ const NavBar = () => {
           </div>
 
           {/* CENTER */}
-          {/* <div className="flex items-center gap-3 w-[520px]">
+          <div className="flex items-center gap-3 w-[520px]">
             <input
               placeholder="Search workspace..."
               className="
@@ -340,7 +340,7 @@ const NavBar = () => {
             >
               Create
             </button>
-          </div> */}
+          </div>
 
           {/* RIGHT */}
           <div className="flex justify-end">
