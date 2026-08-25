@@ -11,6 +11,7 @@ import AppRoutes from "./app/routes";
 import { Hub } from "aws-amplify/utils";
 
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   useEffect(() => {
@@ -168,6 +169,7 @@ function App() {
     <>
       <AppRoutes />
       <Analytics />
+      <SpeedInsights />
     </>
   );
 }
